@@ -65,6 +65,11 @@ class Game {
         this.resetSpeedBoost();
         this.updateUI();
         this.board.draw();
+        
+        // Reset AI status visualizer to normal
+        if (typeof aiStatusVisualizer !== 'undefined' && aiStatusVisualizer) {
+            aiStatusVisualizer.showNormal();
+        }
     }
 
     resetSpeedBoost() {
@@ -167,6 +172,10 @@ class Game {
         const bestMove = await this.ai.findBestMove(this.board, pieceType, this.speedBoost.multiplier);
         
         if (!bestMove) {
+            // Show failed status in AI visualizer
+            if (typeof aiStatusVisualizer !== 'undefined' && aiStatusVisualizer) {
+                aiStatusVisualizer.showFailed();
+            }
             this.gameOver();
             return;
         }
@@ -175,6 +184,10 @@ class Game {
 
         const completedLines = this.board.checkLines();
         if (completedLines.length > 0) {
+            // Show line clear celebration in AI visualizer
+            if (typeof aiStatusVisualizer !== 'undefined' && aiStatusVisualizer) {
+                aiStatusVisualizer.showLineClear(completedLines.length);
+            }
             await this.clearLines(completedLines);
         }
 

@@ -211,12 +211,12 @@
 
                 <div class="panel ai-panel">
                     <h2 class="panel-title" data-i18n="aiStatus">AI Status</h2>
-                    <div class="ai-thinking" id="aiThinking">
-                        <div class="thinking-indicator">
-                            <span class="thinking-dot"></span>
-                            <span class="thinking-dot"></span>
-                            <span class="thinking-dot"></span>
-                        </div>
+                    <div class="ai-visual-status" id="aiVisualStatus">
+                        <img id="aiStatusImage" 
+                             src="images/ai/normal.png" 
+                             alt="AI Status" 
+                             class="ai-status-image">
+                        <div class="ai-status-text" id="aiStatusText" data-i18n="ready">Ready</div>
                     </div>
                 </div>
             </aside>
@@ -258,6 +258,7 @@
     <script src="js/board.js"></script>
     <script src="js/ai.js"></script>
     <script src="js/audio.js"></script>
+    <script src="js/ai-status.js"></script>
     <script src="js/game.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/main.js"></script>

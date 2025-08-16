@@ -15,6 +15,11 @@ class AIPlayer {
     async findBestMove(board, pieceType, speedMultiplier = 1.0) {
         this.isThinking = true;
         this.showThinking(true);
+        
+        // Show thinking status in AI visualizer
+        if (typeof aiStatusVisualizer !== 'undefined' && aiStatusVisualizer) {
+            aiStatusVisualizer.showThinking();
+        }
 
         const cacheKey = this.generateCacheKey(board, pieceType);
         if (this.moveCache.has(cacheKey)) {
@@ -22,6 +27,12 @@ class AIPlayer {
             await this.delay(cachedDelay);
             this.isThinking = false;
             this.showThinking(false);
+            
+            // Return to normal status in AI visualizer
+            if (typeof aiStatusVisualizer !== 'undefined' && aiStatusVisualizer) {
+                aiStatusVisualizer.showNormal();
+            }
+            
             return this.moveCache.get(cacheKey);
         }
 
@@ -53,6 +64,11 @@ class AIPlayer {
 
         this.isThinking = false;
         this.showThinking(false);
+        
+        // Return to normal status in AI visualizer
+        if (typeof aiStatusVisualizer !== 'undefined' && aiStatusVisualizer) {
+            aiStatusVisualizer.showNormal();
+        }
         
         return bestMove;
     }

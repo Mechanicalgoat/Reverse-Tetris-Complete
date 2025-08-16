@@ -316,38 +316,60 @@ body {
     }
 }
 
-.thinking-indicator {
+.ai-visual-status {
     display: flex;
-    justify-content: center;
-    gap: 6px;
-    padding: 12px;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
 }
 
-.thinking-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: pulse 1.4s infinite ease-in-out both;
+.ai-status-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
-.thinking-dot:nth-child(1) {
-    animation-delay: -0.32s;
+.ai-status-image.thinking {
+    animation: aiThinking 1s ease-in-out infinite alternate;
 }
 
-.thinking-dot:nth-child(2) {
-    animation-delay: -0.16s;
+.ai-status-image.line-clear {
+    animation: aiSuccess 0.5s ease-in-out;
 }
 
-@keyframes pulse {
-    0%, 80%, 100% {
-        transform: scale(0.6);
-        opacity: 0.5;
-    }
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
+.ai-status-image.failed {
+    animation: aiFailed 0.5s ease-in-out;
+}
+
+.ai-status-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+@keyframes aiThinking {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.05) rotate(2deg); }
+}
+
+@keyframes aiSuccess {
+    0% { transform: scale(1); filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 4px 16px rgba(76, 175, 80, 0.6)); }
+    100% { transform: scale(1); filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)); }
+}
+
+@keyframes aiFailed {
+    0% { transform: scale(1); filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)); }
+    25% { transform: scale(0.95) rotate(-2deg); filter: drop-shadow(0 4px 16px rgba(244, 67, 54, 0.6)); }
+    75% { transform: scale(0.95) rotate(2deg); filter: drop-shadow(0 4px 16px rgba(244, 67, 54, 0.6)); }
+    100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)); }
 }
 
 .modal {
