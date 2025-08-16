@@ -31,7 +31,36 @@ const languages = {
         ready: "Ready",
         sendingPiece: "Sending piece...",
         lineClearing: "Clearing lines...",
-        gameTitle: "REVERSE TETRIS"
+        gameTitle: "REVERSE TETRIS",
+        // Welcome modal keys
+        welcomeSubtitle: "Choose your language to begin",
+        // Rules modal keys
+        howToPlay: "How to Play",
+        objective: "Objective",
+        objectiveDesc: "Send pieces to the AI and try to fill the top 3 rows to win. But be careful - every piece you send costs points!",
+        scoring: "Scoring System",
+        scoringRule1: "Start with initial points based on difficulty",
+        scoringRule2: "Lose points for every piece you send",
+        scoringRule3: "Lose more points when AI clears lines",
+        scoringRule4: "Your score can go negative!",
+        scoringRule5: "Challenge: Keep your score as high as possible",
+        controls: "Controls",
+        controlsRule1: "Click piece buttons or use keys 1-7",
+        controlsRule2: "Send pieces rapidly for speed bonus",
+        controlsRule3: "Press Space to pause",
+        continue: "Continue",
+        // Difficulty modal keys
+        selectDifficulty: "Select Difficulty",
+        difficultyDesc: "Choose your challenge level. Higher difficulty means smarter AI and lower starting score.",
+        easyDesc: "Relaxed AI, more starting points",
+        normalDesc: "Balanced challenge",
+        hardDesc: "Smart AI, fewer starting points",
+        startingPoints: "Starting Points",
+        startGame: "Start Game",
+        // Current score keys
+        currentScore: "Current Score",
+        piecesSent: "Pieces Sent",
+        help: "Help"
     },
     ja: {
         title: "リバーステトリス",
@@ -65,7 +94,36 @@ const languages = {
         ready: "準備完了",
         sendingPiece: "ピース送信中...",
         lineClearing: "ライン消去中...",
-        gameTitle: "リバーステトリス"
+        gameTitle: "リバーステトリス",
+        // Welcome modal keys
+        welcomeSubtitle: "開始する言語を選択してください",
+        // Rules modal keys
+        howToPlay: "遊び方",
+        objective: "目的",
+        objectiveDesc: "AIにピースを送って上3行を埋めて勝利を目指そう！ただし、ピースを送るたびにポイントが減るので注意！",
+        scoring: "スコアシステム",
+        scoringRule1: "難易度に応じた初期ポイントでスタート",
+        scoringRule2: "ピースを送るたびにポイントが減少",
+        scoringRule3: "AIがラインを消すとさらにポイントが減少",
+        scoringRule4: "スコアはマイナスになることもあります！",
+        scoringRule5: "チャレンジ：できるだけ高いスコアを維持しよう",
+        controls: "操作方法",
+        controlsRule1: "ピースボタンをクリックまたは1-7キーを使用",
+        controlsRule2: "連続で送ってスピードボーナス獲得",
+        controlsRule3: "スペースキーで一時停止",
+        continue: "続行",
+        // Difficulty modal keys
+        selectDifficulty: "難易度選択",
+        difficultyDesc: "チャレンジレベルを選択してください。難易度が高いほどAIが賢く、開始スコアが低くなります。",
+        easyDesc: "リラックスしたAI、多めの開始ポイント",
+        normalDesc: "バランスの取れたチャレンジ",
+        hardDesc: "賢いAI、少ない開始ポイント",
+        startingPoints: "開始ポイント",
+        startGame: "ゲーム開始",
+        // Current score keys
+        currentScore: "現在のスコア",
+        piecesSent: "送信ピース数",
+        help: "ヘルプ"
     },
     zh: {
         title: "反向俄罗斯方块",
@@ -99,7 +157,36 @@ const languages = {
         ready: "准备就绪",
         sendingPiece: "发送方块中...",
         lineClearing: "消除行中...",
-        gameTitle: "反向俄罗斯方块"
+        gameTitle: "反向俄罗斯方块",
+        // Welcome modal keys
+        welcomeSubtitle: "选择您的语言开始游戏",
+        // Rules modal keys
+        howToPlay: "游戏玩法",
+        objective: "目标",
+        objectiveDesc: "向AI发送方块并尝试填满顶部3行获胜。但要小心 - 每发送一个方块都会扣除分数！",
+        scoring: "评分系统",
+        scoringRule1: "根据难度获得初始分数",
+        scoringRule2: "每发送一个方块扣除分数",
+        scoringRule3: "AI消除行时扣除更多分数",
+        scoringRule4: "您的分数可能变为负数！",
+        scoringRule5: "挑战：尽可能保持高分",
+        controls: "控制",
+        controlsRule1: "点击方块按钮或使用1-7键",
+        controlsRule2: "快速发送方块获得速度奖励",
+        controlsRule3: "按空格键暂停",
+        continue: "继续",
+        // Difficulty modal keys
+        selectDifficulty: "选择难度",
+        difficultyDesc: "选择您的挑战级别。难度越高意味着AI更聪明，起始分数更低。",
+        easyDesc: "轻松的AI，更多起始分数",
+        normalDesc: "平衡的挑战",
+        hardDesc: "聪明的AI，较少起始分数",
+        startingPoints: "起始分数",
+        startGame: "开始游戏",
+        // Current score keys
+        currentScore: "当前分数",
+        piecesSent: "已发送方块",
+        help: "帮助"
     }
 };
 

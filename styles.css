@@ -733,6 +733,349 @@ body {
     outline-offset: 2px;
 }
 
+/* Welcome Modal Styles */
+.welcome-modal {
+    z-index: 2000;
+}
+
+.welcome-content {
+    max-width: 600px;
+    text-align: center;
+    padding: 48px 32px;
+}
+
+.welcome-header {
+    margin-bottom: 48px;
+}
+
+.welcome-title {
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg, var(--accent), var(--success));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+}
+
+.welcome-subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.welcome-language-selection {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.welcome-lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.welcome-lang-btn:hover {
+    background: var(--secondary);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(74, 158, 255, 0.3);
+}
+
+.lang-flag {
+    font-size: 32px;
+}
+
+/* Rules Modal Styles */
+.rules-modal {
+    z-index: 1900;
+}
+
+.rules-content {
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.rules-header {
+    padding: 32px 32px 16px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.rules-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0;
+}
+
+.rules-body {
+    padding: 32px;
+}
+
+.rule-section {
+    margin-bottom: 32px;
+}
+
+.rule-section:last-child {
+    margin-bottom: 0;
+}
+
+.rule-section h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.rule-section p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+.rules-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rules-list li {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    padding-left: 24px;
+    position: relative;
+}
+
+.rules-list li::before {
+    content: '•';
+    color: var(--accent);
+    font-weight: bold;
+    position: absolute;
+    left: 8px;
+    font-size: 18px;
+}
+
+.rules-footer {
+    padding: 16px 32px 32px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+}
+
+/* Difficulty Modal Styles */
+.difficulty-modal {
+    z-index: 1800;
+}
+
+.difficulty-content {
+    max-width: 800px;
+}
+
+.difficulty-header {
+    padding: 32px 32px 16px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.difficulty-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 12px 0;
+}
+
+.difficulty-header p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.difficulty-selection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 32px;
+}
+
+.difficulty-option {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.difficulty-option:hover {
+    transform: translateY(-4px);
+}
+
+.difficulty-option.selected .difficulty-card {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, var(--bg-panel), var(--secondary));
+    box-shadow: 0 12px 32px rgba(74, 158, 255, 0.4);
+}
+
+.difficulty-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.difficulty-card h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 16px 0;
+}
+
+.difficulty-score {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.difficulty-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+}
+
+.difficulty-features {
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.difficulty-features span {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.difficulty-footer {
+    padding: 16px 32px 32px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+}
+
+.difficulty-footer .btn {
+    padding: 12px 48px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.difficulty-footer .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.difficulty-footer .btn:disabled:hover {
+    background: var(--accent);
+    transform: none;
+}
+
+/* Score panel enhancements for countdown system */
+.main-score .score-value {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--success), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.main-score .score-value.negative {
+    background: linear-gradient(135deg, var(--danger), var(--warning));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.current-difficulty {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+}
+
+.difficulty-score {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* Mobile responsive adjustments for modals */
+@media (max-width: 768px) {
+    .welcome-content {
+        padding: 32px 24px;
+    }
+
+    .welcome-title {
+        font-size: 32px;
+    }
+
+    .welcome-subtitle {
+        font-size: 16px;
+    }
+
+    .welcome-lang-btn {
+        padding: 16px 20px;
+        font-size: 16px;
+    }
+
+    .lang-flag {
+        font-size: 24px;
+    }
+
+    .difficulty-selection {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 24px;
+    }
+
+    .difficulty-card {
+        padding: 20px;
+    }
+
+    .difficulty-score {
+        font-size: 28px;
+    }
+
+    .rules-header {
+        padding: 24px 24px 16px;
+    }
+
+    .rules-header h2 {
+        font-size: 24px;
+    }
+
+    .rules-body {
+        padding: 24px;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     * {
         animation-duration: 0.01ms !important;

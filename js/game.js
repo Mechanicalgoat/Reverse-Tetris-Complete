@@ -16,6 +16,8 @@ class Game {
                 I: 0, O: 0, T: 0, S: 0, Z: 0, J: 0, L: 0
             }
         };
+        this.countdownMode = false;
+        this.initialScore = 0;
         this.pieceQueue = [];
         this.isProcessing = false;
         this.animationQueue = [];
@@ -46,14 +48,17 @@ class Game {
         this.state.isPlaying = true;
         this.state.isPaused = false;
         this.state.isGameClear = false;
+        
+        // Reset stats with appropriate starting score
         this.stats = {
-            score: 0,
+            score: this.countdownMode ? this.initialScore : 0,
             linesCleared: 0,
             piecesSent: 0,
             pieceTypes: {
                 I: 0, O: 0, T: 0, S: 0, Z: 0, J: 0, L: 0
             }
         };
+        
         this.pieceQueue = [];
         this.isProcessing = false;
         this.animationQueue = [];
@@ -150,7 +155,14 @@ class Game {
     async processPiece(pieceType) {
         this.stats.piecesSent++;
         this.stats.pieceTypes[pieceType]++;
-        this.stats.score += SCORE_VALUES.PIECE_PLACED;
+        
+        // Countdown mode: subtract points for sending pieces
+        if (this.countdownMode) {
+            const pieceCost = 10; // Base cost per piece
+            this.stats.score -= pieceCost;
+        } else {
+            this.stats.score += SCORE_VALUES.PIECE_PLACED;
+        }
 
         const bestMove = await this.ai.findBestMove(this.board, pieceType, this.speedBoost.multiplier);
         
@@ -188,15 +200,29 @@ class Game {
         this.board.draw();
         
         this.stats.linesCleared += lines.length;
-        this.stats.score += lines.length * SCORE_VALUES.LINE_CLEARED;
         
-        if (lines.length > 1) {
-            this.stats.score += (lines.length - 1) * SCORE_VALUES.MULTIPLE_LINES_BONUS;
-        }
-        
-        // Bonus points for speed boost
-        if (this.speedBoost.active) {
-            this.stats.score += Math.floor(lines.length * 10 * this.speedBoost.multiplier);
+        if (this.countdownMode) {
+            // Countdown mode: lose more points when AI clears lines
+            const linePenalty = lines.length * 50; // 50 points per line cleared by AI
+            this.stats.score -= linePenalty;
+            
+            // Additional penalty for multiple lines (tetris, etc.)
+            if (lines.length > 1) {
+                const multiLinePenalty = (lines.length - 1) * 25;
+                this.stats.score -= multiLinePenalty;
+            }
+        } else {
+            // Original scoring system
+            this.stats.score += lines.length * SCORE_VALUES.LINE_CLEARED;
+            
+            if (lines.length > 1) {
+                this.stats.score += (lines.length - 1) * SCORE_VALUES.MULTIPLE_LINES_BONUS;
+            }
+            
+            // Bonus points for speed boost
+            if (this.speedBoost.active) {
+                this.stats.score += Math.floor(lines.length * 10 * this.speedBoost.multiplier);
+            }
         }
     }
 
@@ -241,6 +267,36 @@ class Game {
         }
     }
 
+    setDifficulty(difficulty) {
+        this.state.currentDifficulty = difficulty;
+        if (this.ai) {
+            this.ai.setDifficulty(difficulty);
+        }
+        this.resetSpeedBoost();
+    }
+
+    initializeCountdownMode(difficulty) {
+        this.countdownMode = true;
+        this.setDifficulty(difficulty);
+        
+        // Set initial score based on difficulty
+        const startingScores = {
+            easy: 3000,
+            normal: 2000,
+            hard: 1000
+        };
+        
+        this.initialScore = startingScores[difficulty];
+        this.stats.score = this.initialScore;
+        
+        // Initialize game state
+        if (!this.board) {
+            this.init();
+        } else {
+            this.reset();
+        }
+    }
+
     changeDifficulty(difficulty) {
         if (this.isProcessing) {
             return;
@@ -268,9 +324,27 @@ class Game {
 
     updateUI() {
         requestAnimationFrame(() => {
-            document.getElementById('score').textContent = this.stats.score.toLocaleString();
-            document.getElementById('linesCleared').textContent = this.stats.linesCleared;
-            document.getElementById('piecesSent').textContent = this.stats.piecesSent;
+            const scoreElement = document.getElementById('score');
+            if (scoreElement) {
+                scoreElement.textContent = this.stats.score.toLocaleString();
+                
+                // Add negative score styling in countdown mode
+                if (this.countdownMode && this.stats.score < 0) {
+                    scoreElement.classList.add('negative');
+                } else {
+                    scoreElement.classList.remove('negative');
+                }
+            }
+            
+            const linesClearedElement = document.getElementById('linesCleared');
+            if (linesClearedElement) {
+                linesClearedElement.textContent = this.stats.linesCleared;
+            }
+            
+            const piecesSentElement = document.getElementById('piecesSent');
+            if (piecesSentElement) {
+                piecesSentElement.textContent = this.stats.piecesSent;
+            }
             
             // Show speed boost indicator
             this.updateSpeedIndicator();

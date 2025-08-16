@@ -1,9 +1,11 @@
 class UI {
     constructor(game) {
         this.game = game;
+        this.selectedDifficulty = null;
         this.initEventListeners();
         this.initPiecePreview();
         this.initLanguageSelector();
+        this.initOnboardingFlow();
     }
 
     initEventListeners() {
@@ -50,6 +52,13 @@ class UI {
             playAgainBtn.addEventListener('click', () => {
                 this.game.hideGameOverModal();
                 this.game.reset();
+            });
+        }
+
+        const helpBtn = document.getElementById('helpBtn');
+        if (helpBtn) {
+            helpBtn.addEventListener('click', () => {
+                this.showRulesModal();
             });
         }
 
@@ -303,6 +312,142 @@ class UI {
             const messageIndex = Math.min(Math.floor(multiplier - 2), messages.length - 1);
             this.showMessage(messages[messageIndex]);
         }
+    }
+
+    initOnboardingFlow() {
+        // Check if user has completed onboarding before
+        const hasSeenOnboarding = localStorage.getItem('reverseTetriseOnboardingComplete');
+        
+        if (!hasSeenOnboarding) {
+            this.showWelcomeModal();
+        } else {
+            // Hide all modals and show game directly
+            this.hideAllModals();
+        }
+
+        // Welcome modal language selection
+        document.querySelectorAll('.welcome-lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.dataset.lang;
+                if (typeof i18n !== 'undefined') {
+                    i18n.setLanguage(lang);
+                }
+                this.showRulesModal();
+            });
+        });
+
+        // Rules modal continue button
+        const continueBtn = document.getElementById('continueTodifficulty');
+        if (continueBtn) {
+            continueBtn.addEventListener('click', () => {
+                this.showDifficultyModal();
+            });
+        }
+
+        // Difficulty selection
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const difficulty = option.dataset.difficulty;
+                this.selectDifficulty(difficulty);
+            });
+        });
+
+        // Start game button
+        const startGameBtn = document.getElementById('startGame');
+        if (startGameBtn) {
+            startGameBtn.addEventListener('click', () => {
+                if (this.selectedDifficulty) {
+                    this.startGameWithDifficulty(this.selectedDifficulty);
+                }
+            });
+        }
+    }
+
+    showWelcomeModal() {
+        this.hideAllModals();
+        const modal = document.getElementById('welcomeModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+
+    showRulesModal() {
+        this.hideAllModals();
+        const modal = document.getElementById('rulesModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+
+    showDifficultyModal() {
+        this.hideAllModals();
+        const modal = document.getElementById('difficultyModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+
+    hideAllModals() {
+        const modals = ['welcomeModal', 'rulesModal', 'difficultyModal'];
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    }
+
+    selectDifficulty(difficulty) {
+        this.selectedDifficulty = difficulty;
+        
+        // Update visual selection
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        
+        const selectedOption = document.querySelector(`[data-difficulty="${difficulty}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('selected');
+        }
+
+        // Enable start game button
+        const startGameBtn = document.getElementById('startGame');
+        if (startGameBtn) {
+            startGameBtn.disabled = false;
+        }
+
+        // Update difficulty display
+        const difficultyText = document.getElementById('currentDifficultyText');
+        const difficultyScore = document.getElementById('difficultyScore');
+        
+        if (difficultyText && typeof i18n !== 'undefined') {
+            difficultyText.textContent = i18n.getText(difficulty);
+        }
+
+        // Set starting scores based on difficulty
+        const startingScores = {
+            easy: 3000,
+            normal: 2000,
+            hard: 1000
+        };
+
+        if (difficultyScore) {
+            difficultyScore.textContent = startingScores[difficulty];
+        }
+    }
+
+    startGameWithDifficulty(difficulty) {
+        // Set the game difficulty and initial score
+        this.game.setDifficulty(difficulty);
+        
+        // Mark onboarding as complete
+        localStorage.setItem('reverseTetriseOnboardingComplete', 'true');
+        
+        // Hide all modals and start the game
+        this.hideAllModals();
+        
+        // Initialize game with countdown scoring
+        this.game.initializeCountdownMode(difficulty);
     }
 }
 
