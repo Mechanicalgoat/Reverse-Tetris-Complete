@@ -21,7 +21,7 @@ const languages = {
         finalLines: "Lines Cleared",
         finalPieces: "Pieces Sent",
         playAgain: "Play Again",
-        confirmReset: "Reset the game?",
+        confirmReset: "Are you sure you want to reset the game and start over?",
         gamePaused: "Game is paused or not started",
         queueFull: "Queue is full (max 5)",
         controls: "Controls",
@@ -61,7 +61,23 @@ const languages = {
         // Current score keys
         currentScore: "Current Score",
         piecesSent: "Pieces Sent",
-        help: "Help"
+        help: "Help",
+        // Help modal keys
+        helpTitle: "Game Help",
+        basicRules: "Basic Rules",
+        helpRule1: "Send pieces to fill the top 3 rows",
+        helpRule2: "Each piece costs points",
+        helpRule3: "AI clearing lines costs more points",
+        helpRule4: "Win by filling top rows before running out of points",
+        tips: "Tips & Tricks",
+        tip1: "Send pieces rapidly for speed bonus",
+        tip2: "Use number keys 1-7 for quick piece selection",
+        tip3: "Watch AI patterns to predict moves",
+        tip4: "Try to prevent line clears to save points",
+        keyboardShortcuts: "Keyboard Shortcuts",
+        shortcut1: "Select pieces",
+        shortcut2: "Pause/Resume",
+        shortcut3: "Close dialogs"
     },
     ja: {
         title: "BADPIECE",
@@ -85,7 +101,7 @@ const languages = {
         finalLines: "消去ライン",
         finalPieces: "送信ピース",
         playAgain: "もう一度プレイ",
-        confirmReset: "ゲームをリセットしますか？",
+        confirmReset: "ゲームをリセットして最初からやり直しますか？",
         gamePaused: "ゲームが一時停止中または未開始です",
         queueFull: "キューが満杯です（最大5個）",
         controls: "操作方法",
@@ -125,7 +141,23 @@ const languages = {
         // Current score keys
         currentScore: "現在のスコア",
         piecesSent: "送信ピース数",
-        help: "ヘルプ"
+        help: "ヘルプ",
+        // Help modal keys
+        helpTitle: "ゲームヘルプ",
+        basicRules: "基本ルール",
+        helpRule1: "上3行を埋めるためにピースを送る",
+        helpRule2: "各ピースはポイントを消費",
+        helpRule3: "AIがラインを消すとさらにポイント減少",
+        helpRule4: "ポイントがなくなる前に上部を埋めて勝利",
+        tips: "コツとテクニック",
+        tip1: "素早くピースを送ってスピードボーナス",
+        tip2: "1-7キーで素早くピース選択",
+        tip3: "AIのパターンを観察して動きを予測",
+        tip4: "ライン消去を防いでポイントを節約",
+        keyboardShortcuts: "キーボードショートカット",
+        shortcut1: "ピース選択",
+        shortcut2: "一時停止/再開",
+        shortcut3: "ダイアログを閉じる"
     },
     zh: {
         title: "BADPIECE",
@@ -149,7 +181,7 @@ const languages = {
         finalLines: "消除行数",
         finalPieces: "发送方块",
         playAgain: "再玩一次",
-        confirmReset: "重置游戏？",
+        confirmReset: "确定要重置游戏并重新开始吗？",
         gamePaused: "游戏暂停或未开始",
         queueFull: "队列已满（最多5个）",
         controls: "控制",
@@ -189,7 +221,23 @@ const languages = {
         // Current score keys
         currentScore: "当前分数",
         piecesSent: "已发送方块",
-        help: "帮助"
+        help: "帮助",
+        // Help modal keys
+        helpTitle: "游戏帮助",
+        basicRules: "基本规则",
+        helpRule1: "发送方块填满顶部3行",
+        helpRule2: "每个方块消耗分数",
+        helpRule3: "AI清除行扩额外扣分",
+        helpRule4: "在分数耗尽前填满顶部获胜",
+        tips: "技巧与窍门",
+        tip1: "快速发送方块获得速度奖励",
+        tip2: "使用1-7数字键快速选择",
+        tip3: "观察AI模式预测动作",
+        tip4: "阻止消除行以节省分数",
+        keyboardShortcuts: "键盘快捷键",
+        shortcut1: "选择方块",
+        shortcut2: "暂停/继续",
+        shortcut3: "关闭对话框"
     }
 };
 

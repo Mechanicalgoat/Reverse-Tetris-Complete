@@ -221,7 +221,46 @@
             </aside>
         </main>
 
-        <div id="gameOverModal" class="modal hidden">
+        <!-- Help Modal -->
+    <div id="helpModal" class="modal help-modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content help-content">
+            <div class="help-header">
+                <h2 data-i18n="helpTitle">Game Help</h2>
+                <button class="close-btn" id="closeHelp">&times;</button>
+            </div>
+            <div class="help-body">
+                <div class="help-section">
+                    <h3 data-i18n="basicRules">Basic Rules</h3>
+                    <ul class="help-list">
+                        <li data-i18n="helpRule1">Send pieces to fill the top 3 rows</li>
+                        <li data-i18n="helpRule2">Each piece costs points</li>
+                        <li data-i18n="helpRule3">AI clearing lines costs more points</li>
+                        <li data-i18n="helpRule4">Win by filling top rows before running out of points</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3 data-i18n="tips">Tips & Tricks</h3>
+                    <ul class="help-list">
+                        <li data-i18n="tip1">Send pieces rapidly for speed bonus</li>
+                        <li data-i18n="tip2">Use number keys 1-7 for quick piece selection</li>
+                        <li data-i18n="tip3">Watch AI patterns to predict moves</li>
+                        <li data-i18n="tip4">Try to prevent line clears to save points</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3 data-i18n="keyboardShortcuts">Keyboard Shortcuts</h3>
+                    <ul class="help-list">
+                        <li><kbd>1-7</kbd> - <span data-i18n="shortcut1">Select pieces</span></li>
+                        <li><kbd>Space</kbd> - <span data-i18n="shortcut2">Pause/Resume</span></li>
+                        <li><kbd>Esc</kbd> - <span data-i18n="shortcut3">Close dialogs</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameOverModal" class="modal hidden">
             <div class="modal-overlay"></div>
             <div class="modal-content">
                 <div class="modal-header">

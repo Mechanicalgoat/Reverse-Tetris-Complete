@@ -36,7 +36,8 @@ class UI {
         const resetBtn = document.getElementById('resetBtn');
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
-                if (confirm('ゲームをリセットして最初から始めますか？')) {
+                const confirmMessage = this.getText('confirmReset');
+                if (confirm(confirmMessage)) {
                     // Stop BGM when resetting
                     if (typeof audioManager !== 'undefined') {
                         audioManager.stopBGM();
@@ -62,14 +63,27 @@ class UI {
         const helpBtn = document.getElementById('helpBtn');
         if (helpBtn) {
             helpBtn.addEventListener('click', () => {
-                if (confirm('ヘルプを表示しますか？最初から設定し直すことになります。')) {
-                    // Stop BGM when showing help
-                    if (typeof audioManager !== 'undefined') {
-                        audioManager.stopBGM();
-                    }
-                    this.showWelcomeModal();
-                }
+                this.showHelpModal();
             });
+        }
+        
+        // Close help modal button
+        const closeHelpBtn = document.getElementById('closeHelp');
+        if (closeHelpBtn) {
+            closeHelpBtn.addEventListener('click', () => {
+                this.hideHelpModal();
+            });
+        }
+        
+        // Close help modal on overlay click
+        const helpModal = document.getElementById('helpModal');
+        if (helpModal) {
+            const overlay = helpModal.querySelector('.modal-overlay');
+            if (overlay) {
+                overlay.addEventListener('click', () => {
+                    this.hideHelpModal();
+                });
+            }
         }
 
         const volumeBtn = document.getElementById('volumeBtn');
@@ -217,7 +231,13 @@ class UI {
 
         if (e.key === 'Escape') {
             e.preventDefault();
-            if (this.game.state.isGameClear) {
+            // Close help modal if open
+            const helpModal = document.getElementById('helpModal');
+            if (helpModal && !helpModal.classList.contains('hidden')) {
+                this.hideHelpModal();
+            }
+            // Close game over modal if open
+            else if (this.game.state.isGameClear) {
                 this.game.hideGameOverModal();
             }
         }
@@ -475,6 +495,20 @@ class UI {
             console.log('Game started successfully with countdown mode');
         } catch (error) {
             console.error('Error starting game:', error);
+        }
+    }
+    
+    showHelpModal() {
+        const modal = document.getElementById('helpModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+    
+    hideHelpModal() {
+        const modal = document.getElementById('helpModal');
+        if (modal) {
+            modal.classList.add('hidden');
         }
     }
 }
