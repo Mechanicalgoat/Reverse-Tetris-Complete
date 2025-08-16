@@ -77,6 +77,11 @@ class UI {
             volumeBtn.addEventListener('click', () => {
                 if (typeof audioManager !== 'undefined') {
                     audioManager.toggleMute();
+                    // Test audio playback when clicking volume button
+                    if (!audioManager.isPlaying && !audioManager.isMuted) {
+                        console.log('Testing audio playback...');
+                        audioManager.enableAudioAfterUserInteraction();
+                    }
                 }
             });
         }
@@ -360,6 +365,10 @@ class UI {
         if (startGameBtn) {
             startGameBtn.addEventListener('click', () => {
                 if (this.selectedDifficulty) {
+                    // Enable audio on user click before starting game
+                    if (typeof audioManager !== 'undefined') {
+                        audioManager.enableAudioAfterUserInteraction();
+                    }
                     this.startGameWithDifficulty(this.selectedDifficulty);
                 }
             });

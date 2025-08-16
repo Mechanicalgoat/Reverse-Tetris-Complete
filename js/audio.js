@@ -52,24 +52,31 @@ class AudioManager {
         
         try {
             this.currentTrackIndex = Math.floor(Math.random() * this.bgmTracks.length);
-            this.playCurrentTrack();
             this.isPlaying = true;
-            console.log('BGM started');
+            console.log('Attempting to start BGM...');
+            this.playCurrentTrack();
         } catch (error) {
             console.warn('Failed to start BGM:', error);
         }
     }
 
     playCurrentTrack() {
-        if (!this.bgmAudio) return;
+        if (!this.bgmAudio) {
+            console.warn('BGM audio not initialized');
+            return;
+        }
         
         const trackPath = this.bgmTracks[this.currentTrackIndex];
+        console.log('Loading track:', trackPath);
+        
         this.bgmAudio.src = trackPath;
         this.bgmAudio.volume = this.isMuted ? 0 : this.volume;
         
-        this.bgmAudio.play().catch(error => {
-            console.warn('Audio play failed:', error);
-            // ユーザー操作が必要な場合があるので、ゲーム開始後に再試行
+        this.bgmAudio.play().then(() => {
+            console.log('BGM playing successfully:', trackPath);
+        }).catch(error => {
+            console.warn('Audio play failed:', error.message);
+            console.warn('This might be due to browser autoplay policy. Audio will start after user interaction.');
         });
     }
 
@@ -119,10 +126,22 @@ class AudioManager {
 
     // ユーザー操作後に再生を試行（ブラウザの自動再生ポリシー対応）
     enableAudioAfterUserInteraction() {
+        console.log('User interaction detected, enabling audio...');
+        
         if (this.isPlaying && this.bgmAudio && this.bgmAudio.paused) {
+            console.log('Attempting to resume paused audio...');
             this.bgmAudio.play().catch(error => {
                 console.warn('Audio resume failed:', error);
             });
+        }
+        
+        // ブラウザのaudioコンテキストを有効化
+        try {
+            if (this.bgmAudio) {
+                this.bgmAudio.volume = this.isMuted ? 0 : this.volume;
+            }
+        } catch (error) {
+            console.warn('Audio context activation failed:', error);
         }
     }
 }

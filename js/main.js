@@ -20,6 +20,12 @@ function initGame() {
         console.log('Creating UI instance...');
         ui = new UI(game);
         
+        // Ensure audio manager is initialized
+        if (typeof audioManager === 'undefined') {
+            console.log('Initializing audio manager...');
+            audioManager = new AudioManager();
+        }
+        
         console.log('All users will go through onboarding flow...');
         // Don't initialize game yet, let onboarding flow handle it
         
