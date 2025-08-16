@@ -37,6 +37,10 @@ class UI {
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
                 if (confirm('ゲームをリセットして最初から始めますか？')) {
+                    // Stop BGM when resetting
+                    if (typeof audioManager !== 'undefined') {
+                        audioManager.stopBGM();
+                    }
                     this.showWelcomeModal();
                 }
             });
@@ -47,6 +51,10 @@ class UI {
         if (playAgainBtn) {
             playAgainBtn.addEventListener('click', () => {
                 this.game.hideGameOverModal();
+                // Stop BGM when starting new game
+                if (typeof audioManager !== 'undefined') {
+                    audioManager.stopBGM();
+                }
                 this.showWelcomeModal();
             });
         }
@@ -55,7 +63,20 @@ class UI {
         if (helpBtn) {
             helpBtn.addEventListener('click', () => {
                 if (confirm('ヘルプを表示しますか？最初から設定し直すことになります。')) {
+                    // Stop BGM when showing help
+                    if (typeof audioManager !== 'undefined') {
+                        audioManager.stopBGM();
+                    }
                     this.showWelcomeModal();
+                }
+            });
+        }
+
+        const volumeBtn = document.getElementById('volumeBtn');
+        if (volumeBtn) {
+            volumeBtn.addEventListener('click', () => {
+                if (typeof audioManager !== 'undefined') {
+                    audioManager.toggleMute();
                 }
             });
         }
@@ -308,6 +329,12 @@ class UI {
                 if (typeof i18n !== 'undefined') {
                     i18n.setLanguage(lang);
                 }
+                
+                // Enable audio after user interaction
+                if (typeof audioManager !== 'undefined') {
+                    audioManager.enableAudioAfterUserInteraction();
+                }
+                
                 this.showRulesModal();
             });
         });
@@ -430,6 +457,11 @@ class UI {
             
             // Initialize game with countdown scoring
             this.game.initializeCountdownMode(difficulty);
+            
+            // Start BGM
+            if (typeof audioManager !== 'undefined') {
+                audioManager.startBGM();
+            }
             
             console.log('Game started successfully with countdown mode');
         } catch (error) {
