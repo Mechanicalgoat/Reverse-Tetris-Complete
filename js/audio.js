@@ -1,8 +1,11 @@
 class AudioManager {
     constructor() {
         this.bgmTracks = [
+            // Use local files if available, fallback to external sources
             'music/tetris-music-box.mp3',
-            'music/tetris-strings.mp3'
+            'music/tetris-strings.mp3',
+            // Fallback to a simple test sound (you can replace with royalty-free music)
+            'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
         ];
         this.currentTrackIndex = 0;
         this.bgmAudio = null;
@@ -28,7 +31,8 @@ class AudioManager {
             // エラーハンドリング
             this.bgmAudio.addEventListener('error', (e) => {
                 console.warn('Audio error:', e);
-                this.playNextTrack(); // エラーの場合は次の曲を試す
+                this.isPlaying = false; // エラー時は再生を停止してループを防ぐ
+                console.warn('Audio playback disabled due to file loading errors');
             });
             
             console.log('Audio system initialized');
@@ -60,7 +64,7 @@ class AudioManager {
         }
     }
 
-    playCurrentTrack() {
+    async playCurrentTrack() {
         if (!this.bgmAudio) {
             console.warn('BGM audio not initialized');
             return;
@@ -69,6 +73,20 @@ class AudioManager {
         const trackPath = this.bgmTracks[this.currentTrackIndex];
         console.log('Loading track:', trackPath);
         
+        // Check if file exists before trying to play
+        try {
+            const response = await fetch(trackPath, { method: 'HEAD' });
+            if (!response.ok) {
+                console.warn(`Audio file not found: ${trackPath} (${response.status})`);
+                this.isPlaying = false;
+                return;
+            }
+        } catch (error) {
+            console.warn(`Audio file check failed: ${trackPath}`, error);
+            this.isPlaying = false;
+            return;
+        }
+        
         this.bgmAudio.src = trackPath;
         this.bgmAudio.volume = this.isMuted ? 0 : this.volume;
         
@@ -76,7 +94,7 @@ class AudioManager {
             console.log('BGM playing successfully:', trackPath);
         }).catch(error => {
             console.warn('Audio play failed:', error.message);
-            console.warn('This might be due to browser autoplay policy. Audio will start after user interaction.');
+            this.isPlaying = false; // Stop trying to play if it fails
         });
     }
 
