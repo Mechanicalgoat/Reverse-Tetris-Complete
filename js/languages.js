@@ -1,6 +1,6 @@
 const languages = {
     en: {
-        title: "REVERSE TETRIS",
+        title: "BADPIECE",
         score: "Score",
         linesCleared: "Lines",
         piecesSent: "Pieces",
@@ -33,7 +33,7 @@ const languages = {
         confused: "Failed",
         sendingPiece: "Sending piece...",
         lineClearing: "Clearing lines...",
-        gameTitle: "REVERSE TETRIS",
+        gameTitle: "BADPIECE",
         // Welcome modal keys
         welcomeSubtitle: "Choose your language to begin",
         // Rules modal keys
@@ -64,7 +64,7 @@ const languages = {
         help: "Help"
     },
     ja: {
-        title: "REVERSE TETRIS",
+        title: "BADPIECE",
         score: "スコア",
         linesCleared: "ライン",
         piecesSent: "ピース",
@@ -97,7 +97,7 @@ const languages = {
         confused: "失敗",
         sendingPiece: "ピース送信中...",
         lineClearing: "ライン消去中...",
-        gameTitle: "REVERSE TETRIS",
+        gameTitle: "BADPIECE",
         // Welcome modal keys
         welcomeSubtitle: "開始する言語を選択してください",
         // Rules modal keys
@@ -128,7 +128,7 @@ const languages = {
         help: "ヘルプ"
     },
     zh: {
-        title: "REVERSE TETRIS",
+        title: "BADPIECE",
         score: "分数",
         linesCleared: "消除行",
         piecesSent: "方块数",
@@ -161,7 +161,7 @@ const languages = {
         confused: "失败",
         sendingPiece: "发送方块中...",
         lineClearing: "消除行中...",
-        gameTitle: "REVERSE TETRIS",
+        gameTitle: "BADPIECE",
         // Welcome modal keys
         welcomeSubtitle: "选择您的语言开始游戏",
         // Rules modal keys
