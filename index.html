@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リバーステトリス</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>リバーステトリス</h1>
+            <div class="header-controls">
+                <button id="pauseBtn" class="btn">一時停止</button>
+                <button id="resetBtn" class="btn">リセット</button>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <section class="game-info">
+                <div class="score-panel">
+                    <h2>スコア</h2>
+                    <div class="score-display">
+                        <div class="score-item">
+                            <span>スコア:</span>
+                            <span id="score">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span>ライン消去:</span>
+                            <span id="linesCleared">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span>送信ミノ:</span>
+                            <span id="piecesSent">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="difficulty-panel">
+                    <h2>難易度</h2>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
+                        <button class="difficulty-btn" data-difficulty="normal">Normal</button>
+                        <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+                    </div>
+                </div>
+
+                <div class="stats-panel">
+                    <h2>統計</h2>
+                    <div class="stats-display">
+                        <canvas id="statsChart" width="200" height="150"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="game-board-container">
+                <canvas id="gameBoard" width="300" height="600"></canvas>
+                <div class="grid-overlay"></div>
+            </section>
+
+            <section class="piece-selection">
+                <h2>ミノ選択</h2>
+                <div class="piece-buttons">
+                    <button class="piece-btn" data-piece="I">
+                        <canvas class="piece-preview" data-piece="I"></canvas>
+                    </button>
+                    <button class="piece-btn" data-piece="O">
+                        <canvas class="piece-preview" data-piece="O"></canvas>
+                    </button>
+                    <button class="piece-btn" data-piece="T">
+                        <canvas class="piece-preview" data-piece="T"></canvas>
+                    </button>
+                    <button class="piece-btn" data-piece="S">
+                        <canvas class="piece-preview" data-piece="S"></canvas>
+                    </button>
+                    <button class="piece-btn" data-piece="Z">
+                        <canvas class="piece-preview" data-piece="Z"></canvas>
+                    </button>
+                    <button class="piece-btn" data-piece="J">
+                        <canvas class="piece-preview" data-piece="J"></canvas>
+                    </button>
+                    <button class="piece-btn" data-piece="L">
+                        <canvas class="piece-preview" data-piece="L"></canvas>
+                    </button>
+                </div>
+
+                <div class="queue-panel">
+                    <h3>キュー</h3>
+                    <div id="pieceQueue" class="piece-queue"></div>
+                </div>
+
+                <div class="ai-status">
+                    <h3>AI状態</h3>
+                    <div class="ai-thinking" id="aiThinking">
+                        <span class="thinking-dot"></span>
+                        <span class="thinking-dot"></span>
+                        <span class="thinking-dot"></span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="gameOverModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>ゲームクリア！</h2>
+                <p>おめでとうございます！AIを困らせることに成功しました！</p>
+                <div class="modal-stats">
+                    <p>最終スコア: <span id="finalScore">0</span></p>
+                    <p>消去ライン: <span id="finalLines">0</span></p>
+                    <p>送信ミノ: <span id="finalPieces">0</span></p>
+                </div>
+                <button id="playAgainBtn" class="btn btn-primary">もう一度プレイ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/constants.js"></script>
+    <script src="js/tetrominos.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
