@@ -24,13 +24,19 @@ class UI {
             });
         });
 
-        document.getElementById('pauseBtn').addEventListener('click', () => {
-            this.game.pause();
-        });
+        const pauseBtn = document.getElementById('pauseBtn');
+        if (pauseBtn) {
+            pauseBtn.addEventListener('click', () => {
+                this.game.pause();
+            });
+        }
 
-        document.getElementById('resetBtn').addEventListener('click', () => {
-            this.confirmReset();
-        });
+        const resetBtn = document.getElementById('resetBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.confirmReset();
+            });
+        }
 
         document.querySelectorAll('.difficulty-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -39,10 +45,13 @@ class UI {
             });
         });
 
-        document.getElementById('playAgainBtn').addEventListener('click', () => {
-            this.game.hideGameOverModal();
-            this.game.reset();
-        });
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        if (playAgainBtn) {
+            playAgainBtn.addEventListener('click', () => {
+                this.game.hideGameOverModal();
+                this.game.reset();
+            });
+        }
 
         document.addEventListener('keydown', (e) => {
             this.handleKeyPress(e);
@@ -50,44 +59,64 @@ class UI {
     }
 
     initLanguageSelector() {
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const lang = btn.dataset.lang;
-                i18n.setLanguage(lang);
-                this.updateLanguageButtons();
+        try {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const lang = btn.dataset.lang;
+                    if (typeof i18n !== 'undefined') {
+                        i18n.setLanguage(lang);
+                        this.updateLanguageButtons();
+                    }
+                });
             });
-        });
 
-        i18n.addListener(() => {
-            this.updateUI();
-        });
+            if (typeof i18n !== 'undefined') {
+                i18n.addListener(() => {
+                    this.updateUI();
+                });
 
-        this.updateLanguageButtons();
-        i18n.updateUI();
+                this.updateLanguageButtons();
+                i18n.updateUI();
+            }
+        } catch (error) {
+            console.warn('Language selector initialization failed:', error);
+        }
     }
 
     updateLanguageButtons() {
-        const currentLang = i18n.getCurrentLanguage();
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.lang === currentLang);
-        });
+        try {
+            if (typeof i18n === 'undefined') return;
+            
+            const currentLang = i18n.getCurrentLanguage();
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === currentLang);
+            });
+        } catch (error) {
+            console.warn('Error updating language buttons:', error);
+        }
     }
 
     initPiecePreview() {
-        document.querySelectorAll('.piece-preview').forEach(canvas => {
-            const pieceType = canvas.dataset.piece;
-            drawTetrominoPreview(canvas, pieceType);
-        });
+        try {
+            document.querySelectorAll('.piece-preview').forEach(canvas => {
+                const pieceType = canvas.dataset.piece;
+                if (typeof drawTetrominoPreview === 'function') {
+                    drawTetrominoPreview(canvas, pieceType);
+                }
+            });
+        } catch (error) {
+            console.error('Error initializing piece previews:', error);
+        }
     }
 
     handlePieceSelection(pieceType, button) {
         if (!this.game.state.isPlaying || this.game.state.isPaused) {
-            this.showMessage(i18n.getText('gamePaused'));
+            this.showMessage(this.getText('gamePaused'));
             return;
         }
 
         if (this.game.pieceQueue.length >= 5) {
-            this.showMessage(i18n.getText('queueFull'));
+            this.showMessage(this.getText('queueFull'));
             this.shakeElement(document.getElementById('pieceQueue'));
             return;
         }
@@ -98,6 +127,23 @@ class UI {
             this.animatePieceSelection(button);
             this.playSound('select');
         }
+    }
+
+    getText(key) {
+        if (typeof i18n !== 'undefined') {
+            return i18n.getText(key);
+        }
+        
+        // Fallback messages
+        const fallback = {
+            gamePaused: 'Game is paused or not started',
+            queueFull: 'Queue is full (max 5)',
+            confirmReset: 'Reset the game?',
+            pause: 'Pause',
+            resume: 'Resume'
+        };
+        
+        return fallback[key] || key;
     }
 
     handleKeyPress(e) {
@@ -147,6 +193,8 @@ class UI {
     }
 
     shakeElement(element) {
+        if (!element) return;
+        
         element.classList.add('shake');
         setTimeout(() => {
             element.classList.remove('shake');
@@ -162,9 +210,9 @@ class UI {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: var(--bg-panel);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
+            background: #1a1a1a;
+            color: white;
+            border: 1px solid #2d2d2d;
             padding: 16px 24px;
             border-radius: 12px;
             font-size: 14px;
@@ -172,13 +220,15 @@ class UI {
             z-index: 2000;
             animation: messageShow 2s ease;
             backdrop-filter: blur(8px);
-            box-shadow: 0 8px 32px var(--shadow);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         `;
         
         document.body.appendChild(messageDiv);
         
         setTimeout(() => {
-            messageDiv.remove();
+            if (messageDiv.parentNode) {
+                messageDiv.remove();
+            }
         }, 2000);
     }
 
@@ -188,16 +238,20 @@ class UI {
             return;
         }
 
-        if (confirm(i18n.getText('confirmReset'))) {
+        if (confirm(this.getText('confirmReset'))) {
             this.game.reset();
         }
     }
 
     updateUI() {
-        const pauseBtn = document.getElementById('pauseBtn');
-        if (pauseBtn) {
-            pauseBtn.textContent = this.game.state.isPaused ? 
-                i18n.getText('resume') : i18n.getText('pause');
+        try {
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (pauseBtn) {
+                pauseBtn.textContent = this.game.state.isPaused ? 
+                    this.getText('resume') : this.getText('pause');
+            }
+        } catch (error) {
+            console.warn('Error updating UI:', error);
         }
     }
 
@@ -217,8 +271,8 @@ class UI {
 const style = document.createElement('style');
 style.textContent = `
     .selected {
-        background: var(--accent) !important;
-        border-color: var(--accent) !important;
+        background: var(--accent, #4a9eff) !important;
+        border-color: var(--accent, #4a9eff) !important;
         transform: scale(0.95) !important;
     }
     

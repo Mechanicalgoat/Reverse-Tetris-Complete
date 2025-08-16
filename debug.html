@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Reverse Tetris</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0a0a;
+            color: #ffffff;
+            padding: 20px;
+        }
+        .log {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #4a9eff;
+        }
+        .error {
+            border-left-color: #ef4444;
+        }
+        .success {
+            border-left-color: #4ade80;
+        }
+        button {
+            background: #4a9eff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #3a8eef;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reverse Tetris - Debug Mode</h1>
+    
+    <div class="log">
+        <h3>System Check</h3>
+        <div id="systemCheck">Running checks...</div>
+    </div>
+    
+    <div class="log">
+        <h3>Script Loading</h3>
+        <div id="scriptCheck">Checking scripts...</div>
+    </div>
+    
+    <div class="log">
+        <h3>Game Initialization</h3>
+        <div id="gameCheck">Waiting for initialization...</div>
+    </div>
+    
+    <div>
+        <button onclick="runTests()">Run Tests</button>
+        <button onclick="clearLogs()">Clear Logs</button>
+        <button onclick="location.href='index.html'">Back to Game</button>
+    </div>
+    
+    <div id="logs"></div>
+
+    <!-- Load scripts in order -->
+    <script>
+        let logs = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push({timestamp, message, type});
+            updateLogs();
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function updateLogs() {
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML = logs.map(log => 
+                `<div class="log ${log.type}">
+                    <strong>[${log.timestamp}]</strong> ${log.message}
+                </div>`
+            ).join('');
+        }
+        
+        function clearLogs() {
+            logs = [];
+            updateLogs();
+        }
+        
+        // System checks
+        function checkSystem() {
+            const checks = {
+                'Canvas Support': !!document.createElement('canvas').getContext,
+                'LocalStorage': typeof Storage !== 'undefined',
+                'Promises': typeof Promise !== 'undefined',
+                'ES6 Classes': typeof class {} === 'function',
+                'RequestAnimationFrame': typeof requestAnimationFrame !== 'undefined'
+            };
+            
+            let html = '';
+            for (const [check, passed] of Object.entries(checks)) {
+                html += `<div style="color: ${passed ? '#4ade80' : '#ef4444'}">${check}: ${passed ? 'PASS' : 'FAIL'}</div>`;
+                log(`${check}: ${passed ? 'PASS' : 'FAIL'}`, passed ? 'success' : 'error');
+            }
+            
+            document.getElementById('systemCheck').innerHTML = html;
+        }
+        
+        // Check script loading
+        function checkScripts() {
+            const scripts = [
+                'js/languages.js',
+                'js/constants.js', 
+                'js/tetrominos.js',
+                'js/board.js',
+                'js/ai.js',
+                'js/game.js',
+                'js/ui.js',
+                'js/main.js'
+            ];
+            
+            let html = '';
+            scripts.forEach(script => {
+                const scriptElement = document.createElement('script');
+                scriptElement.src = script;
+                scriptElement.onload = () => {
+                    html += `<div style="color: #4ade80">${script}: LOADED</div>`;
+                    document.getElementById('scriptCheck').innerHTML = html;
+                    log(`${script}: LOADED`, 'success');
+                };
+                scriptElement.onerror = () => {
+                    html += `<div style="color: #ef4444">${script}: FAILED</div>`;
+                    document.getElementById('scriptCheck').innerHTML = html;
+                    log(`${script}: FAILED`, 'error');
+                };
+                document.head.appendChild(scriptElement);
+            });
+        }
+        
+        function runTests() {
+            log('Running manual tests...', 'info');
+            
+            // Test constants
+            if (typeof GRID_WIDTH !== 'undefined') {
+                log('Constants loaded successfully', 'success');
+            } else {
+                log('Constants not loaded', 'error');
+            }
+            
+            // Test tetrominos
+            if (typeof TETROMINOS !== 'undefined') {
+                log('Tetrominos loaded successfully', 'success');
+            } else {
+                log('Tetrominos not loaded', 'error');
+            }
+            
+            // Test classes
+            try {
+                if (typeof Board !== 'undefined') {
+                    log('Board class available', 'success');
+                }
+                if (typeof Game !== 'undefined') {
+                    log('Game class available', 'success');
+                }
+                if (typeof AIPlayer !== 'undefined') {
+                    log('AIPlayer class available', 'success');
+                }
+                if (typeof UI !== 'undefined') {
+                    log('UI class available', 'success');
+                }
+            } catch (error) {
+                log(`Class check error: ${error.message}`, 'error');
+            }
+            
+            // Test i18n
+            if (typeof i18n !== 'undefined') {
+                log('i18n system available', 'success');
+                try {
+                    const testText = i18n.getText('title');
+                    log(`i18n test: ${testText}`, 'success');
+                } catch (error) {
+                    log(`i18n error: ${error.message}`, 'error');
+                }
+            } else {
+                log('i18n system not available', 'error');
+            }
+        }
+        
+        // Start checks
+        checkSystem();
+        
+        // Load scripts after DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            checkScripts();
+            
+            // Wait a bit then try initialization
+            setTimeout(() => {
+                try {
+                    log('Attempting game initialization...', 'info');
+                    document.getElementById('gameCheck').innerHTML = '<div style="color: #fbbf24">Initializing...</div>';
+                    
+                    // This will fail but we can see the error
+                    if (typeof Game !== 'undefined') {
+                        const testGame = new Game();
+                        log('Game instance created successfully', 'success');
+                        document.getElementById('gameCheck').innerHTML = '<div style="color: #4ade80">Game initialized successfully</div>';
+                    } else {
+                        throw new Error('Game class not available');
+                    }
+                } catch (error) {
+                    log(`Initialization error: ${error.message}`, 'error');
+                    document.getElementById('gameCheck').innerHTML = `<div style="color: #ef4444">Error: ${error.message}</div>`;
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

@@ -151,8 +151,9 @@ class Game {
     updatePauseButton() {
         const pauseBtn = document.getElementById('pauseBtn');
         if (pauseBtn) {
-            pauseBtn.textContent = this.state.isPaused ? 
-                i18n.getText('resume') : i18n.getText('pause');
+            const resumeText = (typeof i18n !== 'undefined') ? i18n.getText('resume') : 'Resume';
+            const pauseText = (typeof i18n !== 'undefined') ? i18n.getText('pause') : 'Pause';
+            pauseBtn.textContent = this.state.isPaused ? resumeText : pauseText;
         }
     }
 
