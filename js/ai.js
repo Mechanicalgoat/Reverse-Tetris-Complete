@@ -3,18 +3,29 @@ class AIPlayer {
         this.difficulty = difficulty;
         this.settings = DIFFICULTY_SETTINGS[difficulty];
         this.isThinking = false;
+        this.moveCache = new Map();
     }
 
     setDifficulty(difficulty) {
         this.difficulty = difficulty;
         this.settings = DIFFICULTY_SETTINGS[difficulty];
+        this.moveCache.clear();
     }
 
     async findBestMove(board, pieceType) {
         this.isThinking = true;
         this.showThinking(true);
 
-        await this.delay(this.settings.thinkingTime);
+        const cacheKey = this.generateCacheKey(board, pieceType);
+        if (this.moveCache.has(cacheKey)) {
+            await this.delay(Math.min(this.settings.thinkingTime, 200));
+            this.isThinking = false;
+            this.showThinking(false);
+            return this.moveCache.get(cacheKey);
+        }
+
+        const thinkingDelay = this.settings.thinkingTime * 0.3;
+        await this.delay(thinkingDelay);
 
         const piece = new Tetromino(pieceType);
         const moves = this.getAllPossibleMoves(board, piece);
@@ -32,22 +43,34 @@ class AIPlayer {
             }
         }
 
+        if (this.moveCache.size > 50) {
+            this.moveCache.clear();
+        }
+        this.moveCache.set(cacheKey, bestMove);
+
         this.isThinking = false;
         this.showThinking(false);
         
         return bestMove;
     }
 
+    generateCacheKey(board, pieceType) {
+        const gridStr = board.grid.map(row => row.join('')).join('|');
+        return `${pieceType}-${gridStr}-${this.difficulty}`;
+    }
+
     getAllPossibleMoves(board, piece) {
         const moves = [];
+        const checkedPositions = new Set();
         
         for (let rotation = 0; rotation < 4; rotation++) {
-            const rotatedPiece = piece.clone();
-            rotatedPiece.shape = piece.getRotatedShape(rotation);
+            const rotatedShape = piece.getRotatedShape(rotation);
             
             for (let x = -2; x < GRID_WIDTH + 2; x++) {
-                const testPiece = rotatedPiece.clone();
+                const testPiece = piece.clone();
+                testPiece.shape = rotatedShape;
                 testPiece.x = x;
+                testPiece.rotation = rotation;
                 
                 if (!this.isValidHorizontalPosition(board, testPiece)) {
                     continue;
@@ -57,7 +80,9 @@ class AIPlayer {
                     testPiece.y++;
                 }
                 
-                if (testPiece.y >= 0) {
+                const posKey = `${testPiece.x}-${testPiece.y}-${rotation}`;
+                if (!checkedPositions.has(posKey) && testPiece.y >= 0) {
+                    checkedPositions.add(posKey);
                     moves.push({
                         piece: testPiece.clone(),
                         x: testPiece.x,
@@ -120,12 +145,15 @@ class AIPlayer {
         piece.y = 0;
         
         board.currentPiece = piece;
+        board.draw();
+
+        const dropSpeed = 16;
+        const targetY = move.y;
         
-        const dropSpeed = 50;
-        while (piece.y < move.y) {
+        while (piece.y < targetY) {
+            await this.delay(dropSpeed);
             piece.y++;
             board.draw();
-            await this.delay(dropSpeed);
         }
         
         board.placePiece(piece);
@@ -133,13 +161,20 @@ class AIPlayer {
     }
 
     delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise(resolve => {
+            if (ms <= 0) {
+                resolve();
+            } else {
+                setTimeout(resolve, ms);
+            }
+        });
     }
 
     showThinking(show) {
         const thinkingElement = document.getElementById('aiThinking');
         if (thinkingElement) {
-            thinkingElement.style.opacity = show ? '1' : '0.3';
+            thinkingElement.style.opacity = show ? '1' : '0.5';
+            thinkingElement.style.transform = show ? 'scale(1)' : 'scale(0.95)';
         }
     }
 }

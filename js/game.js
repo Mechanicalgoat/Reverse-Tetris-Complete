@@ -18,6 +18,9 @@ class Game {
         };
         this.pieceQueue = [];
         this.isProcessing = false;
+        this.animationQueue = [];
+        this.lastUpdate = 0;
+        this.updateThrottle = 1000 / PERFORMANCE_CONFIG.FPS_TARGET;
     }
 
     init() {
@@ -42,6 +45,7 @@ class Game {
         };
         this.pieceQueue = [];
         this.isProcessing = false;
+        this.animationQueue = [];
         this.updateUI();
         this.board.draw();
     }
@@ -59,7 +63,7 @@ class Game {
         this.updateQueueDisplay();
         
         if (!this.isProcessing) {
-            await this.processQueue();
+            this.processQueue();
         }
 
         return true;
@@ -103,7 +107,7 @@ class Game {
             this.gameOver();
         }
 
-        this.updateUI();
+        this.throttledUpdateUI();
     }
 
     async clearLines(lines) {
@@ -121,8 +125,6 @@ class Game {
         if (lines.length > 1) {
             this.stats.score += (lines.length - 1) * SCORE_VALUES.MULTIPLE_LINES_BONUS;
         }
-        
-        this.updateUI();
     }
 
     gameOver() {
@@ -139,12 +141,18 @@ class Game {
         }
         
         this.state.isPaused = !this.state.isPaused;
-        const pauseBtn = document.getElementById('pauseBtn');
-        pauseBtn.textContent = this.state.isPaused ? 
-            i18n.getText('resume') : i18n.getText('pause');
+        this.updatePauseButton();
         
         if (!this.state.isPaused && this.pieceQueue.length > 0) {
             this.processQueue();
+        }
+    }
+
+    updatePauseButton() {
+        const pauseBtn = document.getElementById('pauseBtn');
+        if (pauseBtn) {
+            pauseBtn.textContent = this.state.isPaused ? 
+                i18n.getText('resume') : i18n.getText('pause');
         }
     }
 
@@ -164,28 +172,45 @@ class Game {
         });
     }
 
+    throttledUpdateUI() {
+        const now = Date.now();
+        if (now - this.lastUpdate > this.updateThrottle) {
+            this.updateUI();
+            this.lastUpdate = now;
+        }
+    }
+
     updateUI() {
-        document.getElementById('score').textContent = this.stats.score;
-        document.getElementById('linesCleared').textContent = this.stats.linesCleared;
-        document.getElementById('piecesSent').textContent = this.stats.piecesSent;
-        
-        this.updateStatsChart();
+        requestAnimationFrame(() => {
+            document.getElementById('score').textContent = this.stats.score.toLocaleString();
+            document.getElementById('linesCleared').textContent = this.stats.linesCleared;
+            document.getElementById('piecesSent').textContent = this.stats.piecesSent;
+            
+            this.updateStatsChart();
+        });
     }
 
     updateQueueDisplay() {
         const queueElement = document.getElementById('pieceQueue');
-        queueElement.innerHTML = '';
+        if (!queueElement) return;
         
-        this.pieceQueue.forEach(pieceType => {
-            const queueItem = document.createElement('div');
-            queueItem.className = 'queue-item';
-            queueItem.style.backgroundColor = COLORS[pieceType];
-            queueElement.appendChild(queueItem);
+        requestAnimationFrame(() => {
+            queueElement.innerHTML = '';
+            
+            this.pieceQueue.forEach((pieceType, index) => {
+                const queueItem = document.createElement('div');
+                queueItem.className = 'queue-item';
+                queueItem.style.backgroundColor = COLORS[pieceType];
+                queueItem.style.animationDelay = `${index * 50}ms`;
+                queueElement.appendChild(queueItem);
+            });
         });
     }
 
     updateStatsChart() {
         const canvas = document.getElementById('statsChart');
+        if (!canvas) return;
+        
         const ctx = canvas.getContext('2d');
         
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -203,10 +228,16 @@ class Game {
             ctx.fillStyle = COLORS[type];
             ctx.fillRect(x, y, barWidth * 0.8, barHeight);
             
-            ctx.fillStyle = '#333';
-            ctx.font = '12px Arial';
+            ctx.fillStyle = 'var(--text-secondary)';
+            ctx.font = '10px Inter';
             ctx.textAlign = 'center';
-            ctx.fillText(type, x + barWidth * 0.4, canvas.height);
+            ctx.fillText(type, x + barWidth * 0.4, canvas.height - 2);
+            
+            if (count > 0) {
+                ctx.fillStyle = 'var(--text-primary)';
+                ctx.font = 'bold 9px Inter';
+                ctx.fillText(count, x + barWidth * 0.4, y - 2);
+            }
         });
     }
 
@@ -214,7 +245,7 @@ class Game {
         const modal = document.getElementById('gameOverModal');
         modal.classList.remove('hidden');
         
-        document.getElementById('finalScore').textContent = this.stats.score;
+        document.getElementById('finalScore').textContent = this.stats.score.toLocaleString();
         document.getElementById('finalLines').textContent = this.stats.linesCleared;
         document.getElementById('finalPieces').textContent = this.stats.piecesSent;
     }

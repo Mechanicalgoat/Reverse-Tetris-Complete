@@ -313,6 +313,19 @@ body {
     height: 32px;
     border-radius: 4px;
     flex-shrink: 0;
+    animation: queueSlide 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes queueSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-20px) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
 }
 
 .thinking-indicator {
@@ -510,6 +523,7 @@ body {
         padding: 0;
         max-width: 100%;
         height: 100vh;
+        height: 100dvh;
         display: flex;
         flex-direction: column;
     }
@@ -648,5 +662,46 @@ body {
 
     .stat-value {
         font-size: 20px;
+    }
+}
+
+.game-loaded {
+    animation: gameLoadFade 0.5s ease;
+}
+
+@keyframes gameLoadFade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.piece-btn:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.btn:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.difficulty-btn:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.lang-btn:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

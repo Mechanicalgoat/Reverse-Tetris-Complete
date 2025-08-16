@@ -16,26 +16,31 @@ const languages = {
         normal: "Normal",
         hard: "Hard",
         gameOver: "Game Clear!",
-        gameOverMessage: "Congratulations! You've successfully stacked the AI!",
+        gameOverMessage: "Congratulations! You've successfully overwhelmed the AI!",
         finalScore: "Final Score",
         finalLines: "Lines Cleared",
         finalPieces: "Pieces Sent",
         playAgain: "Play Again",
         confirmReset: "Reset the game?",
-        gamePaused: "Game is paused",
-        queueFull: "Queue is full",
+        gamePaused: "Game is paused or not started",
+        queueFull: "Queue is full (max 5)",
         controls: "Controls",
         controlsInfo: "Click pieces or use 1-7 keys • Space to pause",
-        language: "Language"
+        language: "Language",
+        thinking: "AI Thinking...",
+        ready: "Ready",
+        sendingPiece: "Sending piece...",
+        lineClearing: "Clearing lines...",
+        gameTitle: "REVERSE TETRIS"
     },
     ja: {
         title: "リバーステトリス",
         score: "スコア",
-        linesCleared: "ライン消去",
-        piecesSent: "送信ミノ",
+        linesCleared: "ライン",
+        piecesSent: "ピース",
         difficulty: "難易度",
         statistics: "統計",
-        pieceSelection: "ミノ選択",
+        pieceSelection: "ピース選択",
         queue: "キュー",
         aiStatus: "AI状態",
         pause: "一時停止",
@@ -48,20 +53,25 @@ const languages = {
         gameOverMessage: "おめでとうございます！AIを困らせることに成功しました！",
         finalScore: "最終スコア",
         finalLines: "消去ライン",
-        finalPieces: "送信ミノ",
+        finalPieces: "送信ピース",
         playAgain: "もう一度プレイ",
         confirmReset: "ゲームをリセットしますか？",
-        gamePaused: "ゲーム中でないか一時停止中です",
-        queueFull: "キューが満杯です",
+        gamePaused: "ゲームが一時停止中または未開始です",
+        queueFull: "キューが満杯です（最大5個）",
         controls: "操作方法",
-        controlsInfo: "ミノクリックまたは1-7キー • スペースで一時停止",
-        language: "言語"
+        controlsInfo: "ピースをクリックまたは1-7キー • スペースで一時停止",
+        language: "言語",
+        thinking: "AI思考中...",
+        ready: "準備完了",
+        sendingPiece: "ピース送信中...",
+        lineClearing: "ライン消去中...",
+        gameTitle: "リバーステトリス"
     },
     zh: {
         title: "反向俄罗斯方块",
         score: "分数",
-        linesCleared: "消除行数",
-        piecesSent: "发送方块",
+        linesCleared: "消除行",
+        piecesSent: "方块数",
         difficulty: "难度",
         statistics: "统计",
         pieceSelection: "选择方块",
@@ -80,18 +90,36 @@ const languages = {
         finalPieces: "发送方块",
         playAgain: "再玩一次",
         confirmReset: "重置游戏？",
-        gamePaused: "游戏未开始或已暂停",
-        queueFull: "队列已满",
+        gamePaused: "游戏暂停或未开始",
+        queueFull: "队列已满（最多5个）",
         controls: "控制",
         controlsInfo: "点击方块或使用1-7键 • 空格键暂停",
-        language: "语言"
+        language: "语言",
+        thinking: "AI思考中...",
+        ready: "准备就绪",
+        sendingPiece: "发送方块中...",
+        lineClearing: "消除行中...",
+        gameTitle: "反向俄罗斯方块"
     }
 };
 
 class LanguageManager {
     constructor() {
-        this.currentLanguage = localStorage.getItem('language') || 'en';
+        this.currentLanguage = this.detectLanguage();
         this.listeners = [];
+        this.initialized = false;
+    }
+
+    detectLanguage() {
+        const saved = localStorage.getItem('reverseTetrislanguage');
+        if (saved && languages[saved]) {
+            return saved;
+        }
+
+        const browserLang = navigator.language || navigator.userLanguage;
+        if (browserLang.startsWith('ja')) return 'ja';
+        if (browserLang.startsWith('zh')) return 'zh';
+        return 'en';
     }
 
     getCurrentLanguage() {
@@ -99,38 +127,79 @@ class LanguageManager {
     }
 
     setLanguage(lang) {
-        if (languages[lang]) {
+        if (languages[lang] && lang !== this.currentLanguage) {
             this.currentLanguage = lang;
-            localStorage.setItem('language', lang);
+            localStorage.setItem('reverseTetrislanguage', lang);
             this.updateUI();
             this.notifyListeners();
         }
     }
 
     getText(key) {
-        return languages[this.currentLanguage][key] || languages['en'][key] || key;
+        const text = languages[this.currentLanguage]?.[key] || 
+                    languages['en']?.[key] || 
+                    key;
+        return text;
     }
 
     updateUI() {
-        document.querySelectorAll('[data-i18n]').forEach(element => {
-            const key = element.dataset.i18n;
-            element.textContent = this.getText(key);
-        });
+        requestAnimationFrame(() => {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.dataset.i18n;
+                const text = this.getText(key);
+                if (element.textContent !== text) {
+                    element.textContent = text;
+                }
+            });
 
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-            const key = element.dataset.i18nPlaceholder;
-            element.placeholder = this.getText(key);
-        });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.dataset.i18nPlaceholder;
+                const text = this.getText(key);
+                if (element.placeholder !== text) {
+                    element.placeholder = text;
+                }
+            });
 
-        document.title = this.getText('title');
+            const title = this.getText('title');
+            if (document.title !== title) {
+                document.title = title;
+            }
+
+            const gameTitle = document.querySelector('.game-title');
+            if (gameTitle) {
+                const titleText = this.getText('gameTitle');
+                if (gameTitle.textContent !== titleText) {
+                    gameTitle.textContent = titleText;
+                }
+            }
+        });
     }
 
     addListener(callback) {
         this.listeners.push(callback);
     }
 
+    removeListener(callback) {
+        const index = this.listeners.indexOf(callback);
+        if (index > -1) {
+            this.listeners.splice(index, 1);
+        }
+    }
+
     notifyListeners() {
-        this.listeners.forEach(callback => callback(this.currentLanguage));
+        this.listeners.forEach(callback => {
+            try {
+                callback(this.currentLanguage);
+            } catch (error) {
+                console.warn('Language listener error:', error);
+            }
+        });
+    }
+
+    init() {
+        if (this.initialized) return;
+        this.initialized = true;
+        this.updateUI();
     }
 }
 
