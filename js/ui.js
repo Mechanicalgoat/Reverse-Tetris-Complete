@@ -3,6 +3,7 @@ class UI {
         this.game = game;
         this.initEventListeners();
         this.initPiecePreview();
+        this.initLanguageSelector();
     }
 
     initEventListeners() {
@@ -14,7 +15,7 @@ class UI {
 
             btn.addEventListener('mouseenter', () => {
                 if (this.game.state.isPlaying && !this.game.state.isPaused) {
-                    btn.style.transform = 'scale(1.1)';
+                    btn.style.transform = 'scale(1.05)';
                 }
             });
 
@@ -48,6 +49,30 @@ class UI {
         });
     }
 
+    initLanguageSelector() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.dataset.lang;
+                i18n.setLanguage(lang);
+                this.updateLanguageButtons();
+            });
+        });
+
+        i18n.addListener(() => {
+            this.updateUI();
+        });
+
+        this.updateLanguageButtons();
+        i18n.updateUI();
+    }
+
+    updateLanguageButtons() {
+        const currentLang = i18n.getCurrentLanguage();
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === currentLang);
+        });
+    }
+
     initPiecePreview() {
         document.querySelectorAll('.piece-preview').forEach(canvas => {
             const pieceType = canvas.dataset.piece;
@@ -57,12 +82,12 @@ class UI {
 
     handlePieceSelection(pieceType, button) {
         if (!this.game.state.isPlaying || this.game.state.isPaused) {
-            this.showMessage('ゲーム中でないか一時停止中です');
+            this.showMessage(i18n.getText('gamePaused'));
             return;
         }
 
         if (this.game.pieceQueue.length >= 5) {
-            this.showMessage('キューが満杯です');
+            this.showMessage(i18n.getText('queueFull'));
             this.shakeElement(document.getElementById('pieceQueue'));
             return;
         }
@@ -87,26 +112,20 @@ class UI {
             '4': 'S',
             '5': 'Z',
             '6': 'J',
-            '7': 'L',
-            'q': 'I',
-            'w': 'O',
-            'e': 'T',
-            'r': 'S',
-            't': 'Z',
-            'y': 'J',
-            'u': 'L'
+            '7': 'L'
         };
 
-        const pieceType = keyMap[e.key.toLowerCase()];
+        const pieceType = keyMap[e.key];
         if (pieceType) {
             e.preventDefault();
             const button = document.querySelector(`.piece-btn[data-piece="${pieceType}"]`);
             if (button) {
                 this.handlePieceSelection(pieceType, button);
+                this.animatePieceSelection(button);
             }
         }
 
-        if (e.key === ' ' || e.key === 'p') {
+        if (e.key === ' ' || e.key === 'p' || e.key === 'P') {
             e.preventDefault();
             this.game.pause();
         }
@@ -122,14 +141,9 @@ class UI {
     animatePieceSelection(button) {
         button.classList.add('selected');
         
-        const ripple = document.createElement('div');
-        ripple.className = 'ripple';
-        button.appendChild(ripple);
-        
         setTimeout(() => {
             button.classList.remove('selected');
-            ripple.remove();
-        }, 300);
+        }, 200);
     }
 
     shakeElement(element) {
@@ -148,13 +162,17 @@ class UI {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px 40px;
-            border-radius: 10px;
-            font-size: 18px;
+            background: var(--bg-panel);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
             z-index: 2000;
-            animation: fadeInOut 2s ease;
+            animation: messageShow 2s ease;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px var(--shadow);
         `;
         
         document.body.appendChild(messageDiv);
@@ -170,13 +188,21 @@ class UI {
             return;
         }
 
-        if (confirm('ゲームをリセットしますか？')) {
+        if (confirm(i18n.getText('confirmReset'))) {
             this.game.reset();
         }
     }
 
+    updateUI() {
+        const pauseBtn = document.getElementById('pauseBtn');
+        if (pauseBtn) {
+            pauseBtn.textContent = this.game.state.isPaused ? 
+                i18n.getText('resume') : i18n.getText('pause');
+        }
+    }
+
     playSound(type) {
-        // サウンド実装は省略（オプション）
+        // Sound implementation could go here
     }
 
     updateDifficultyDisplay() {
@@ -187,42 +213,13 @@ class UI {
     }
 }
 
-// アニメーション用CSS追加
+// Add message animation CSS
 const style = document.createElement('style');
 style.textContent = `
     .selected {
-        animation: pulse 0.3s ease;
-    }
-    
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(0.9); }
-        100% { transform: scale(1); }
-    }
-    
-    .ripple {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(255, 255, 255, 0.5);
-        animation: rippleEffect 0.3s ease;
-    }
-    
-    @keyframes rippleEffect {
-        from {
-            width: 0;
-            height: 0;
-            opacity: 1;
-        }
-        to {
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-        }
+        background: var(--accent) !important;
+        border-color: var(--accent) !important;
+        transform: scale(0.95) !important;
     }
     
     .shake {
@@ -231,15 +228,27 @@ style.textContent = `
     
     @keyframes shake {
         0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-10px); }
-        75% { transform: translateX(10px); }
+        25% { transform: translateX(-8px); }
+        75% { transform: translateX(8px); }
     }
     
-    @keyframes fadeInOut {
-        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    @keyframes messageShow {
+        0% { 
+            opacity: 0; 
+            transform: translate(-50%, -50%) scale(0.9) translateY(10px); 
+        }
+        15% { 
+            opacity: 1; 
+            transform: translate(-50%, -50%) scale(1) translateY(0); 
+        }
+        85% { 
+            opacity: 1; 
+            transform: translate(-50%, -50%) scale(1) translateY(0); 
+        }
+        100% { 
+            opacity: 0; 
+            transform: translate(-50%, -50%) scale(0.9) translateY(-10px); 
+        }
     }
 `;
 document.head.appendChild(style);

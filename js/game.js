@@ -140,7 +140,8 @@ class Game {
         
         this.state.isPaused = !this.state.isPaused;
         const pauseBtn = document.getElementById('pauseBtn');
-        pauseBtn.textContent = this.state.isPaused ? '再開' : '一時停止';
+        pauseBtn.textContent = this.state.isPaused ? 
+            i18n.getText('resume') : i18n.getText('pause');
         
         if (!this.state.isPaused && this.pieceQueue.length > 0) {
             this.processQueue();
