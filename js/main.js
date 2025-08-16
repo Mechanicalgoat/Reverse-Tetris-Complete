@@ -11,24 +11,29 @@ function initGame() {
         
         // Initialize language manager
         if (typeof i18n !== 'undefined') {
-            i18n.updateUI();
+            i18n.init();
         }
         
         console.log('Creating game instance...');
         game = new Game();
         
-        console.log('Initializing game...');
-        game.init();
-        
         console.log('Creating UI instance...');
         ui = new UI(game);
         
-        console.log('Resetting game...');
-        game.reset();
+        // Check if onboarding is needed
+        const hasSeenOnboarding = localStorage.getItem('reverseTetriseOnboardingComplete');
+        
+        if (!hasSeenOnboarding) {
+            console.log('First time user - showing onboarding...');
+            // Don't initialize game yet, let onboarding flow handle it
+        } else {
+            console.log('Returning user - initializing game directly...');
+            game.init();
+            game.reset();
+            logGameStart();
+        }
         
         console.log('Game initialization complete!');
-        logGameStart();
-        
         document.body.classList.add('game-loaded');
         
     } catch (error) {

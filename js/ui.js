@@ -62,6 +62,14 @@ class UI {
             });
         }
 
+        // Debug: Add reset onboarding functionality (Ctrl+Shift+R)
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+                localStorage.removeItem('reverseTetriseOnboardingComplete');
+                location.reload();
+            }
+        });
+
         document.addEventListener('keydown', (e) => {
             this.handleKeyPress(e);
         });
@@ -323,6 +331,12 @@ class UI {
         } else {
             // Hide all modals and show game directly
             this.hideAllModals();
+            
+            // For returning users, set default countdown mode
+            if (this.game.board) {
+                const defaultDifficulty = 'normal';
+                this.game.initializeCountdownMode(defaultDifficulty);
+            }
         }
 
         // Welcome modal language selection
@@ -337,7 +351,7 @@ class UI {
         });
 
         // Rules modal continue button
-        const continueBtn = document.getElementById('continueTodifficulty');
+        const continueBtn = document.getElementById('continueToDifficulty');
         if (continueBtn) {
             continueBtn.addEventListener('click', () => {
                 this.showDifficultyModal();
@@ -361,6 +375,20 @@ class UI {
                 }
             });
         }
+
+        // Prevent modal close on overlay click during onboarding
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                // Only allow closing if onboarding is complete
+                const hasSeenOnboarding = localStorage.getItem('reverseTetriseOnboardingComplete');
+                if (hasSeenOnboarding) {
+                    const modal = e.target.closest('.modal');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                    }
+                }
+            });
+        });
     }
 
     showWelcomeModal() {
@@ -437,17 +465,27 @@ class UI {
     }
 
     startGameWithDifficulty(difficulty) {
-        // Set the game difficulty and initial score
-        this.game.setDifficulty(difficulty);
-        
-        // Mark onboarding as complete
-        localStorage.setItem('reverseTetriseOnboardingComplete', 'true');
-        
-        // Hide all modals and start the game
-        this.hideAllModals();
-        
-        // Initialize game with countdown scoring
-        this.game.initializeCountdownMode(difficulty);
+        try {
+            console.log('Starting game with difficulty:', difficulty);
+            
+            // Mark onboarding as complete
+            localStorage.setItem('reverseTetriseOnboardingComplete', 'true');
+            
+            // Hide all modals first
+            this.hideAllModals();
+            
+            // Initialize game if not already done
+            if (!this.game.board) {
+                this.game.init();
+            }
+            
+            // Initialize game with countdown scoring
+            this.game.initializeCountdownMode(difficulty);
+            
+            console.log('Game started successfully with countdown mode');
+        } catch (error) {
+            console.error('Error starting game:', error);
+        }
     }
 }
 

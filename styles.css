@@ -947,14 +947,6 @@ body {
     margin: 0 0 16px 0;
 }
 
-.difficulty-score {
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--accent);
-    margin-bottom: 12px;
-    font-variant-numeric: tabular-nums;
-}
-
 .difficulty-card p {
     font-size: 14px;
     color: var(--text-secondary);
@@ -1020,10 +1012,18 @@ body {
     font-weight: 500;
 }
 
-.difficulty-score {
+.difficulty-panel .difficulty-score {
     font-size: 18px;
     font-weight: 600;
     color: var(--accent);
+}
+
+.difficulty-card .difficulty-score {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Mobile responsive adjustments for modals */
@@ -1059,7 +1059,7 @@ body {
         padding: 20px;
     }
 
-    .difficulty-score {
+    .difficulty-card .difficulty-score {
         font-size: 28px;
     }
 
