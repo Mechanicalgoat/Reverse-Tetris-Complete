@@ -20,18 +20,8 @@ function initGame() {
         console.log('Creating UI instance...');
         ui = new UI(game);
         
-        // Check if onboarding is needed
-        const hasSeenOnboarding = localStorage.getItem('reverseTetriseOnboardingComplete');
-        
-        if (!hasSeenOnboarding) {
-            console.log('First time user - showing onboarding...');
-            // Don't initialize game yet, let onboarding flow handle it
-        } else {
-            console.log('Returning user - initializing game directly...');
-            game.init();
-            game.reset();
-            logGameStart();
-        }
+        console.log('All users will go through onboarding flow...');
+        // Don't initialize game yet, let onboarding flow handle it
         
         console.log('Game initialization complete!');
         document.body.classList.add('game-loaded');

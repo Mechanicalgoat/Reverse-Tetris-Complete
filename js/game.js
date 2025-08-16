@@ -297,22 +297,6 @@ class Game {
         }
     }
 
-    changeDifficulty(difficulty) {
-        if (this.isProcessing) {
-            return;
-        }
-        
-        this.state.currentDifficulty = difficulty;
-        this.ai.setDifficulty(difficulty);
-        this.resetSpeedBoost(); // Reset speed boost when changing difficulty
-        
-        document.querySelectorAll('.difficulty-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.difficulty === difficulty) {
-                btn.classList.add('active');
-            }
-        });
-    }
 
     throttledUpdateUI() {
         const now = Date.now();

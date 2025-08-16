@@ -193,35 +193,6 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
-.difficulty-buttons {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
-}
-
-.difficulty-btn {
-    padding: 10px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.difficulty-btn:hover {
-    background: var(--secondary);
-    color: var(--text-primary);
-    border-color: var(--secondary);
-}
-
-.difficulty-btn.active {
-    background: var(--accent);
-    color: var(--text-primary);
-    border-color: var(--accent);
-}
 
 .stats-display {
     background: var(--bg-secondary);
@@ -665,15 +636,6 @@ body {
         font-size: 18px;
     }
 
-    .difficulty-buttons {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-    }
-
-    .difficulty-btn {
-        padding: 8px;
-        font-size: 12px;
-    }
 
     .modal-content {
         width: 95%;
@@ -723,10 +685,6 @@ body {
     outline-offset: 2px;
 }
 
-.difficulty-btn:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-}
 
 .lang-btn:focus {
     outline: 2px solid var(--accent);
@@ -1012,11 +970,6 @@ body {
     font-weight: 500;
 }
 
-.difficulty-panel .difficulty-score {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--accent);
-}
 
 .difficulty-card .difficulty-score {
     font-size: 36px;

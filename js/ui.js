@@ -36,22 +36,18 @@ class UI {
         const resetBtn = document.getElementById('resetBtn');
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
-                this.confirmReset();
+                if (confirm('ゲームをリセットして難易度選択に戻りますか？')) {
+                    this.showDifficultyModal();
+                }
             });
         }
 
-        document.querySelectorAll('.difficulty-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const difficulty = btn.dataset.difficulty;
-                this.game.changeDifficulty(difficulty);
-            });
-        });
 
         const playAgainBtn = document.getElementById('playAgainBtn');
         if (playAgainBtn) {
             playAgainBtn.addEventListener('click', () => {
                 this.game.hideGameOverModal();
-                this.game.reset();
+                this.showDifficultyModal();
             });
         }
 
@@ -62,13 +58,6 @@ class UI {
             });
         }
 
-        // Debug: Add reset onboarding functionality (Ctrl+Shift+R)
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'R') {
-                localStorage.removeItem('reverseTetriseOnboardingComplete');
-                location.reload();
-            }
-        });
 
         document.addEventListener('keydown', (e) => {
             this.handleKeyPress(e);
@@ -254,16 +243,6 @@ class UI {
         }, 2000);
     }
 
-    confirmReset() {
-        if (!this.game.state.isPlaying && !this.game.state.isGameClear) {
-            this.game.reset();
-            return;
-        }
-
-        if (confirm(this.getText('confirmReset'))) {
-            this.game.reset();
-        }
-    }
 
     updateUI() {
         try {
@@ -281,12 +260,6 @@ class UI {
         // Sound implementation could go here
     }
 
-    updateDifficultyDisplay() {
-        const difficulty = this.game.state.currentDifficulty;
-        document.querySelectorAll('.difficulty-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.difficulty === difficulty);
-        });
-    }
 
     showSpeedFeedback(button) {
         if (this.game.speedBoost.active) {
@@ -323,21 +296,8 @@ class UI {
     }
 
     initOnboardingFlow() {
-        // Check if user has completed onboarding before
-        const hasSeenOnboarding = localStorage.getItem('reverseTetriseOnboardingComplete');
-        
-        if (!hasSeenOnboarding) {
-            this.showWelcomeModal();
-        } else {
-            // Hide all modals and show game directly
-            this.hideAllModals();
-            
-            // For returning users, set default countdown mode
-            if (this.game.board) {
-                const defaultDifficulty = 'normal';
-                this.game.initializeCountdownMode(defaultDifficulty);
-            }
-        }
+        // Always show onboarding flow for every user
+        this.showWelcomeModal();
 
         // Welcome modal language selection
         document.querySelectorAll('.welcome-lang-btn').forEach(btn => {
@@ -379,14 +339,9 @@ class UI {
         // Prevent modal close on overlay click during onboarding
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {
-                // Only allow closing if onboarding is complete
-                const hasSeenOnboarding = localStorage.getItem('reverseTetriseOnboardingComplete');
-                if (hasSeenOnboarding) {
-                    const modal = e.target.closest('.modal');
-                    if (modal) {
-                        modal.classList.add('hidden');
-                    }
-                }
+                // Don't allow closing during onboarding flow
+                e.preventDefault();
+                e.stopPropagation();
             });
         });
     }
@@ -443,33 +398,11 @@ class UI {
         if (startGameBtn) {
             startGameBtn.disabled = false;
         }
-
-        // Update difficulty display
-        const difficultyText = document.getElementById('currentDifficultyText');
-        const difficultyScore = document.getElementById('difficultyScore');
-        
-        if (difficultyText && typeof i18n !== 'undefined') {
-            difficultyText.textContent = i18n.getText(difficulty);
-        }
-
-        // Set starting scores based on difficulty
-        const startingScores = {
-            easy: 3000,
-            normal: 2000,
-            hard: 1000
-        };
-
-        if (difficultyScore) {
-            difficultyScore.textContent = startingScores[difficulty];
-        }
     }
 
     startGameWithDifficulty(difficulty) {
         try {
             console.log('Starting game with difficulty:', difficulty);
-            
-            // Mark onboarding as complete
-            localStorage.setItem('reverseTetriseOnboardingComplete', 'true');
             
             // Hide all modals first
             this.hideAllModals();
