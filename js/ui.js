@@ -36,8 +36,8 @@ class UI {
         const resetBtn = document.getElementById('resetBtn');
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
-                if (confirm('ゲームをリセットして難易度選択に戻りますか？')) {
-                    this.showDifficultyModal();
+                if (confirm('ゲームをリセットして最初から始めますか？')) {
+                    this.showWelcomeModal();
                 }
             });
         }
@@ -47,14 +47,16 @@ class UI {
         if (playAgainBtn) {
             playAgainBtn.addEventListener('click', () => {
                 this.game.hideGameOverModal();
-                this.showDifficultyModal();
+                this.showWelcomeModal();
             });
         }
 
         const helpBtn = document.getElementById('helpBtn');
         if (helpBtn) {
             helpBtn.addEventListener('click', () => {
-                this.showRulesModal();
+                if (confirm('ヘルプを表示しますか？最初から設定し直すことになります。')) {
+                    this.showWelcomeModal();
+                }
             });
         }
 
@@ -347,6 +349,20 @@ class UI {
     }
 
     showWelcomeModal() {
+        // Reset selection state
+        this.selectedDifficulty = null;
+        
+        // Reset difficulty selection UI
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        
+        // Disable start game button
+        const startGameBtn = document.getElementById('startGame');
+        if (startGameBtn) {
+            startGameBtn.disabled = true;
+        }
+        
         this.hideAllModals();
         const modal = document.getElementById('welcomeModal');
         if (modal) {

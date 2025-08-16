@@ -73,13 +73,6 @@ body {
     gap: 16px;
 }
 
-.language-selector {
-    display: flex;
-    gap: 4px;
-    background: var(--bg-panel);
-    padding: 4px;
-    border-radius: 8px;
-}
 
 .lang-btn {
     padding: 6px 12px;
@@ -537,9 +530,6 @@ body {
         font-size: 18px;
     }
 
-    .language-selector {
-        display: none;
-    }
 
     .header-controls .btn {
         padding: 6px 12px;
