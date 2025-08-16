@@ -1,7 +1,6 @@
 class AIStatusVisualizer {
     constructor() {
         this.imageElement = null;
-        this.textElement = null;
         this.currentState = 'normal';
         this.animationTimeout = null;
         this.lastStateChange = 0;
@@ -25,23 +24,13 @@ class AIStatusVisualizer {
             'line-clear-alt': 'images/ai/line-clear-alt.png',
             failed: 'images/ai/failed.png'
         };
-        
-        // Map states to text keys for i18n
-        this.stateTexts = {
-            normal: 'ready',
-            thinking: 'thinking',
-            'line-clear': 'celebrating',
-            'line-clear-alt': 'celebrating',
-            failed: 'confused'
-        };
     }
     
     init() {
         this.imageElement = document.getElementById('aiStatusImage');
-        this.textElement = document.getElementById('aiStatusText');
         
-        if (!this.imageElement || !this.textElement) {
-            console.warn('AI status elements not found');
+        if (!this.imageElement) {
+            console.warn('AI status image element not found');
             return false;
         }
         
@@ -50,7 +39,7 @@ class AIStatusVisualizer {
     }
     
     setState(state, forceImmediate = false) {
-        if (!this.imageElement || !this.textElement) {
+        if (!this.imageElement) {
             return;
         }
         
@@ -87,24 +76,6 @@ class AIStatusVisualizer {
         setTimeout(() => {
             if (this.stateImages[state]) {
                 this.imageElement.src = this.stateImages[state];
-            }
-            
-            // Update text
-            if (this.stateTexts[state]) {
-                const textKey = this.stateTexts[state];
-                if (typeof i18n !== 'undefined') {
-                    this.textElement.textContent = i18n.getText(textKey);
-                    this.textElement.setAttribute('data-i18n', textKey);
-                } else {
-                    // Fallback text
-                    const fallbackTexts = {
-                        ready: 'Ready',
-                        thinking: 'Thinking...',
-                        celebrating: 'Success!',
-                        confused: 'Failed'
-                    };
-                    this.textElement.textContent = fallbackTexts[textKey] || 'Ready';
-                }
             }
             
             // Add appropriate animation class

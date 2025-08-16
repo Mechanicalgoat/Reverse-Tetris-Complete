@@ -318,9 +318,8 @@ body {
 
 .ai-visual-status {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 12px;
     padding: 16px;
 }
 
@@ -345,14 +344,6 @@ body {
     animation: aiFailed 0.5s ease-in-out;
 }
 
-.ai-status-text {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
 
 @keyframes aiThinking {
     0% { transform: scale(1) rotate(0deg); }
