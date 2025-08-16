@@ -115,8 +115,12 @@ class UI {
             return;
         }
 
-        if (this.game.pieceQueue.length >= 5) {
-            this.showMessage(this.getText('queueFull'));
+        // Allow larger queue during speed boost
+        const maxQueue = this.game.speedBoost.active ? 10 : 5;
+        if (this.game.pieceQueue.length >= maxQueue) {
+            const queueFullMsg = this.game.speedBoost.active ? 
+                'Speed queue is full (max 10)' : this.getText('queueFull');
+            this.showMessage(queueFullMsg);
             this.shakeElement(document.getElementById('pieceQueue'));
             return;
         }
@@ -125,6 +129,7 @@ class UI {
         
         if (success) {
             this.animatePieceSelection(button);
+            this.showSpeedFeedback(button);
             this.playSound('select');
         }
     }
@@ -264,6 +269,40 @@ class UI {
         document.querySelectorAll('.difficulty-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.difficulty === difficulty);
         });
+    }
+
+    showSpeedFeedback(button) {
+        if (this.game.speedBoost.active) {
+            button.classList.add('rapid-fire');
+            setTimeout(() => {
+                button.classList.remove('rapid-fire');
+            }, 200);
+
+            // Add speed boost indicator to game container
+            const gameContainer = document.querySelector('.game-container');
+            if (gameContainer) {
+                gameContainer.classList.add('speed-boost-active');
+                setTimeout(() => {
+                    if (!this.game.speedBoost.active) {
+                        gameContainer.classList.remove('speed-boost-active');
+                    }
+                }, 1000);
+            }
+        }
+    }
+
+    showSpeedMessage(multiplier) {
+        if (multiplier > 2) {
+            const messages = [
+                'SPEED BOOST!',
+                'RAPID FIRE!',
+                'TURBO MODE!',
+                'LIGHTNING FAST!',
+                'MAXIMUM SPEED!'
+            ];
+            const messageIndex = Math.min(Math.floor(multiplier - 2), messages.length - 1);
+            this.showMessage(messages[messageIndex]);
+        }
     }
 }
 

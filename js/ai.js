@@ -12,20 +12,23 @@ class AIPlayer {
         this.moveCache.clear();
     }
 
-    async findBestMove(board, pieceType) {
+    async findBestMove(board, pieceType, speedMultiplier = 1.0) {
         this.isThinking = true;
         this.showThinking(true);
 
         const cacheKey = this.generateCacheKey(board, pieceType);
         if (this.moveCache.has(cacheKey)) {
-            await this.delay(Math.min(this.settings.thinkingTime, 200));
+            const cachedDelay = Math.max(20, Math.min(this.settings.thinkingTime, 200) / speedMultiplier);
+            await this.delay(cachedDelay);
             this.isThinking = false;
             this.showThinking(false);
             return this.moveCache.get(cacheKey);
         }
 
-        const thinkingDelay = this.settings.thinkingTime * 0.3;
-        await this.delay(thinkingDelay);
+        // Dramatically reduce thinking time with speed boost
+        const baseThinkingTime = this.settings.thinkingTime * 0.3;
+        const adjustedThinkingTime = Math.max(10, baseThinkingTime / speedMultiplier);
+        await this.delay(adjustedThinkingTime);
 
         const piece = new Tetromino(pieceType);
         const moves = this.getAllPossibleMoves(board, piece);
@@ -138,7 +141,7 @@ class AIPlayer {
         return score * randomFactor;
     }
 
-    async animateMove(board, move) {
+    async animateMove(board, move, speedMultiplier = 1.0) {
         const piece = new Tetromino(move.piece.type);
         piece.shape = move.piece.shape;
         piece.x = move.x;
@@ -147,15 +150,30 @@ class AIPlayer {
         board.currentPiece = piece;
         board.draw();
 
-        const dropSpeed = 16;
+        // Dynamic speed based on multiplier and queue length
+        const baseDropSpeed = 16;
+        const adjustedSpeed = Math.max(2, baseDropSpeed / speedMultiplier);
         const targetY = move.y;
         
+        // For very high speeds, skip some frames
+        const skipFrames = speedMultiplier > 3 ? Math.floor(speedMultiplier / 2) : 1;
+        
         while (piece.y < targetY) {
-            await this.delay(dropSpeed);
-            piece.y++;
+            piece.y += skipFrames;
+            if (piece.y > targetY) piece.y = targetY;
+            
             board.draw();
+            
+            // Skip animation entirely for extreme speeds
+            if (speedMultiplier > 4) {
+                break;
+            }
+            
+            await this.delay(adjustedSpeed);
         }
         
+        // Ensure piece is at correct position
+        piece.y = targetY;
         board.placePiece(piece);
         board.draw();
     }

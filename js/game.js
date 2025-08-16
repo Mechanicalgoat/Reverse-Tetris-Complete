@@ -21,6 +21,17 @@ class Game {
         this.animationQueue = [];
         this.lastUpdate = 0;
         this.updateThrottle = 1000 / PERFORMANCE_CONFIG.FPS_TARGET;
+        
+        // Speed enhancement system
+        this.speedBoost = {
+            active: false,
+            multiplier: 1.0,
+            lastInputTime: 0,
+            inputCount: 0,
+            maxMultiplier: 5.0,
+            decayRate: 0.95,
+            boostThreshold: 100 // ms between inputs to trigger boost
+        };
     }
 
     init() {
@@ -46,18 +57,68 @@ class Game {
         this.pieceQueue = [];
         this.isProcessing = false;
         this.animationQueue = [];
+        this.resetSpeedBoost();
         this.updateUI();
         this.board.draw();
     }
 
+    resetSpeedBoost() {
+        this.speedBoost = {
+            active: false,
+            multiplier: 1.0,
+            lastInputTime: 0,
+            inputCount: 0,
+            maxMultiplier: 5.0,
+            decayRate: 0.95,
+            boostThreshold: 100
+        };
+    }
+
+    updateSpeedBoost() {
+        const now = Date.now();
+        const timeSinceLastInput = now - this.speedBoost.lastInputTime;
+        
+        if (timeSinceLastInput > 500) { // Reset if no input for 500ms
+            this.speedBoost.multiplier = Math.max(1.0, this.speedBoost.multiplier * 0.8);
+            this.speedBoost.inputCount = 0;
+            this.speedBoost.active = false;
+        } else {
+            // Decay multiplier over time
+            this.speedBoost.multiplier *= this.speedBoost.decayRate;
+            this.speedBoost.multiplier = Math.max(1.0, this.speedBoost.multiplier);
+        }
+    }
+
     async sendPiece(pieceType) {
-        if (!this.state.isPlaying || this.state.isPaused || this.isProcessing) {
+        if (!this.state.isPlaying || this.state.isPaused) {
             return false;
         }
 
-        if (this.pieceQueue.length >= 5) {
+        // Allow queue overflow during speed boost
+        const maxQueueSize = this.speedBoost.active ? 10 : 5;
+        if (this.pieceQueue.length >= maxQueueSize) {
             return false;
         }
+
+        const now = Date.now();
+        const timeSinceLastInput = now - this.speedBoost.lastInputTime;
+        
+        // Check for rapid input
+        if (timeSinceLastInput < this.speedBoost.boostThreshold) {
+            this.speedBoost.inputCount++;
+            this.speedBoost.multiplier = Math.min(
+                this.speedBoost.maxMultiplier, 
+                1.0 + (this.speedBoost.inputCount * 0.3)
+            );
+            this.speedBoost.active = true;
+        } else if (timeSinceLastInput > 300) {
+            // Reset if input is too slow
+            this.speedBoost.inputCount = 1;
+            this.speedBoost.multiplier = 1.0;
+            this.speedBoost.active = false;
+        }
+        
+        this.speedBoost.lastInputTime = now;
 
         this.pieceQueue.push(pieceType);
         this.updateQueueDisplay();
@@ -72,6 +133,8 @@ class Game {
     async processQueue() {
         while (this.pieceQueue.length > 0 && this.state.isPlaying && !this.state.isPaused) {
             this.isProcessing = true;
+            this.updateSpeedBoost();
+            
             const pieceType = this.pieceQueue.shift();
             this.updateQueueDisplay();
             
@@ -89,14 +152,14 @@ class Game {
         this.stats.pieceTypes[pieceType]++;
         this.stats.score += SCORE_VALUES.PIECE_PLACED;
 
-        const bestMove = await this.ai.findBestMove(this.board, pieceType);
+        const bestMove = await this.ai.findBestMove(this.board, pieceType, this.speedBoost.multiplier);
         
         if (!bestMove) {
             this.gameOver();
             return;
         }
 
-        await this.ai.animateMove(this.board, bestMove);
+        await this.ai.animateMove(this.board, bestMove, this.speedBoost.multiplier);
 
         const completedLines = this.board.checkLines();
         if (completedLines.length > 0) {
@@ -111,10 +174,15 @@ class Game {
     }
 
     async clearLines(lines) {
+        // Faster line clearing during speed boost
+        const clearDelay = this.speedBoost.active ? 
+            Math.max(50, LINE_CLEAR_DELAY / this.speedBoost.multiplier) : 
+            LINE_CLEAR_DELAY;
+
         this.board.highlightLines(lines);
         this.board.draw();
         
-        await this.delay(LINE_CLEAR_DELAY);
+        await this.delay(clearDelay);
         
         this.board.clearLines(lines);
         this.board.draw();
@@ -125,12 +193,23 @@ class Game {
         if (lines.length > 1) {
             this.stats.score += (lines.length - 1) * SCORE_VALUES.MULTIPLE_LINES_BONUS;
         }
+        
+        // Bonus points for speed boost
+        if (this.speedBoost.active) {
+            this.stats.score += Math.floor(lines.length * 10 * this.speedBoost.multiplier);
+        }
     }
 
     gameOver() {
         this.state.isPlaying = false;
         this.state.isGameClear = true;
         this.stats.score += SCORE_VALUES.GAME_CLEAR;
+        
+        // Speed bonus
+        if (this.speedBoost.active) {
+            this.stats.score += Math.floor(500 * this.speedBoost.multiplier);
+        }
+        
         this.showGameOverModal();
         this.updateUI();
     }
@@ -141,6 +220,11 @@ class Game {
         }
         
         this.state.isPaused = !this.state.isPaused;
+        
+        if (this.state.isPaused) {
+            this.resetSpeedBoost(); // Reset speed boost when paused
+        }
+        
         this.updatePauseButton();
         
         if (!this.state.isPaused && this.pieceQueue.length > 0) {
@@ -164,6 +248,7 @@ class Game {
         
         this.state.currentDifficulty = difficulty;
         this.ai.setDifficulty(difficulty);
+        this.resetSpeedBoost(); // Reset speed boost when changing difficulty
         
         document.querySelectorAll('.difficulty-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -187,8 +272,22 @@ class Game {
             document.getElementById('linesCleared').textContent = this.stats.linesCleared;
             document.getElementById('piecesSent').textContent = this.stats.piecesSent;
             
+            // Show speed boost indicator
+            this.updateSpeedIndicator();
             this.updateStatsChart();
         });
+    }
+
+    updateSpeedIndicator() {
+        const aiStatus = document.getElementById('aiThinking');
+        if (aiStatus && this.speedBoost.active) {
+            const intensity = Math.min(1, this.speedBoost.multiplier / 3);
+            aiStatus.style.filter = `hue-rotate(${intensity * 120}deg) brightness(${1 + intensity})`;
+            aiStatus.style.transform = `scale(${1 + intensity * 0.2})`;
+        } else if (aiStatus) {
+            aiStatus.style.filter = '';
+            aiStatus.style.transform = '';
+        }
     }
 
     updateQueueDisplay() {
@@ -202,7 +301,14 @@ class Game {
                 const queueItem = document.createElement('div');
                 queueItem.className = 'queue-item';
                 queueItem.style.backgroundColor = COLORS[pieceType];
-                queueItem.style.animationDelay = `${index * 50}ms`;
+                
+                // Visual feedback for speed boost
+                if (this.speedBoost.active) {
+                    queueItem.style.boxShadow = `0 0 10px ${COLORS[pieceType]}`;
+                    queueItem.style.animation = 'queuePulse 0.3s ease infinite alternate';
+                }
+                
+                queueItem.style.animationDelay = `${index * 30}ms`;
                 queueElement.appendChild(queueItem);
             });
         });
