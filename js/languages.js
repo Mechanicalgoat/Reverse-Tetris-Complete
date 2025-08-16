@@ -50,10 +50,10 @@ const languages = {
         continue: "Continue",
         // Difficulty modal keys
         selectDifficulty: "Select Difficulty",
-        difficultyDesc: "Choose your challenge level. Higher difficulty means smarter AI and lower starting score.",
-        easyDesc: "Relaxed AI, more starting points",
+        difficultyDesc: "Choose your challenge level. Higher difficulty means smarter AI and more starting points.",
+        easyDesc: "Relaxed AI, fewer starting points",
         normalDesc: "Balanced challenge",
-        hardDesc: "Smart AI, fewer starting points",
+        hardDesc: "Smart AI, more starting points",
         startingPoints: "Starting Points",
         startGame: "Start Game",
         // Current score keys
@@ -112,10 +112,10 @@ const languages = {
         continue: "続行",
         // Difficulty modal keys
         selectDifficulty: "難易度選択",
-        difficultyDesc: "チャレンジレベルを選択してください。難易度が高いほどAIが賢く、開始スコアが低くなります。",
-        easyDesc: "リラックスしたAI、多めの開始ポイント",
+        difficultyDesc: "チャレンジレベルを選択してください。難易度が高いほどAIが賢く、開始スコアが多くなります。",
+        easyDesc: "リラックスしたAI、少ない開始ポイント",
         normalDesc: "バランスの取れたチャレンジ",
-        hardDesc: "賢いAI、少ない開始ポイント",
+        hardDesc: "賢いAI、多めの開始ポイント",
         startingPoints: "開始ポイント",
         startGame: "ゲーム開始",
         // Current score keys
@@ -174,10 +174,10 @@ const languages = {
         continue: "继续",
         // Difficulty modal keys
         selectDifficulty: "选择难度",
-        difficultyDesc: "选择您的挑战级别。难度越高意味着AI更聪明，起始分数更低。",
-        easyDesc: "轻松的AI，更多起始分数",
+        difficultyDesc: "选择您的挑战级别。难度越高意味着AI更聪明，起始分数更多。",
+        easyDesc: "轻松的AI，较少起始分数",
         normalDesc: "平衡的挑战",
-        hardDesc: "聪明的AI，较少起始分数",
+        hardDesc: "聪明的AI，更多起始分数",
         startingPoints: "起始分数",
         startGame: "开始游戏",
         // Current score keys

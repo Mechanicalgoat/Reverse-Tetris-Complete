@@ -281,9 +281,9 @@ class Game {
         
         // Set initial score based on difficulty
         const startingScores = {
-            easy: 3000,
+            easy: 1000,
             normal: 2000,
-            hard: 1000
+            hard: 3000
         };
         
         this.initialScore = startingScores[difficulty];
