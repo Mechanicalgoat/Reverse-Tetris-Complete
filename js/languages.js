@@ -1,6 +1,6 @@
 const languages = {
     en: {
-        title: "Reverse Tetris",
+        title: "REVERSE TETRIS",
         score: "Score",
         linesCleared: "Lines",
         piecesSent: "Pieces",
@@ -62,7 +62,7 @@ const languages = {
         help: "Help"
     },
     ja: {
-        title: "リバーステトリス",
+        title: "REVERSE TETRIS",
         score: "スコア",
         linesCleared: "ライン",
         piecesSent: "ピース",
@@ -93,7 +93,7 @@ const languages = {
         ready: "準備完了",
         sendingPiece: "ピース送信中...",
         lineClearing: "ライン消去中...",
-        gameTitle: "リバーステトリス",
+        gameTitle: "REVERSE TETRIS",
         // Welcome modal keys
         welcomeSubtitle: "開始する言語を選択してください",
         // Rules modal keys
@@ -124,7 +124,7 @@ const languages = {
         help: "ヘルプ"
     },
     zh: {
-        title: "反向俄罗斯方块",
+        title: "REVERSE TETRIS",
         score: "分数",
         linesCleared: "消除行",
         piecesSent: "方块数",
@@ -155,7 +155,7 @@ const languages = {
         ready: "准备就绪",
         sendingPiece: "发送方块中...",
         lineClearing: "消除行中...",
-        gameTitle: "反向俄罗斯方块",
+        gameTitle: "REVERSE TETRIS",
         // Welcome modal keys
         welcomeSubtitle: "选择您的语言开始游戏",
         // Rules modal keys
@@ -200,9 +200,7 @@ class LanguageManager {
             return saved;
         }
 
-        const browserLang = navigator.language || navigator.userLanguage;
-        if (browserLang.startsWith('ja')) return 'ja';
-        if (browserLang.startsWith('zh')) return 'zh';
+        // Default to English for all users
         return 'en';
     }
 
