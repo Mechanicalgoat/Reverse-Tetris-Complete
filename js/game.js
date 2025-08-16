@@ -66,9 +66,9 @@ class Game {
         this.updateUI();
         this.board.draw();
         
-        // Reset AI status visualizer to normal
+        // Reset AI status visualizer to normal (force immediate)
         if (typeof aiStatusVisualizer !== 'undefined' && aiStatusVisualizer) {
-            aiStatusVisualizer.showNormal();
+            aiStatusVisualizer.forceState('normal');
         }
     }
 
@@ -153,8 +153,22 @@ class Game {
             if (this.state.isGameClear) {
                 break;
             }
+            
+            // Small delay between pieces to let AI status show properly
+            if (this.pieceQueue.length > 0) {
+                await this.delay(300);
+            }
         }
         this.isProcessing = false;
+        
+        // Return to normal state when queue is empty
+        if (this.pieceQueue.length === 0 && typeof aiStatusVisualizer !== 'undefined' && aiStatusVisualizer) {
+            setTimeout(() => {
+                if (this.pieceQueue.length === 0) { // Double check queue is still empty
+                    aiStatusVisualizer.showNormal();
+                }
+            }, 500);
+        }
     }
 
     async processPiece(pieceType) {
@@ -262,6 +276,12 @@ class Game {
         
         if (this.state.isPaused) {
             this.resetSpeedBoost(); // Reset speed boost when paused
+            
+            // Clear AI status queue when paused and show normal state
+            if (typeof aiStatusVisualizer !== 'undefined' && aiStatusVisualizer) {
+                aiStatusVisualizer.clearQueue();
+                aiStatusVisualizer.forceState('normal');
+            }
         }
         
         this.updatePauseButton();
